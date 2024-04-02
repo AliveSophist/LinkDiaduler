@@ -1,0 +1,175 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JList;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import java.awt.CardLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.ListSelectionModel;
+public class UserManager{
+	
+	public JFrame frameManager;
+	public CardLayout card;
+	//유저 선택화면
+	private JPanel pnlChooseUser;
+	private JScrollPane scrollPane;
+	private JList list;
+	private JButton btnChoiceUser, btnframeAddUser, btnDeleteUser;
+	//유저 추가화면
+	private JPanel pnlAddUser;
+	private JTextField username;
+	private JLabel lblUserName, lblexplanation1, lblexplanation2, lblexplanation3, lblexplanation4;
+	private JButton btnRegister, btnMakeUser, btnReverter;
+
+	public UserManager() {
+		initialize();
+		pnlChooseUser.setVisible(true);
+		pnlAddUser.setVisible(false);
+	}
+
+	private void initialize() {
+		frameManager = new JFrame();
+		frameManager.setTitle("UserManager");
+		frameManager.setBounds(100, 100, 250, 300);
+		frameManager.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		frameManager.getContentPane().setLayout(null);
+		
+		pnlChooseUser = new JPanel();
+		pnlChooseUser.setBounds(0, 0, 250, 300);
+		pnlChooseUser.setLayout(null);
+		frameManager.getContentPane().add(pnlChooseUser);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(22, 25, 196, 138);
+		pnlChooseUser.add(scrollPane);
+		list = new JList(DataManager.returnUserArray());
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane.setViewportView(list);
+		
+		btnChoiceUser = new JButton("해당 유저로 동기화");
+		btnChoiceUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frameManager.dispose();
+				
+				DataManager.user=(String)list.getSelectedValue();
+				Main.openframeHome();
+				
+			}
+		});
+		btnChoiceUser.setBounds(22, 174, 196, 30);
+		pnlChooseUser.add(btnChoiceUser);
+		
+		btnframeAddUser = new JButton("유저 추가");
+		btnframeAddUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlChooseUser.setVisible(false);
+				
+				pnlAddUser.setVisible(true);
+			}
+		});
+		btnframeAddUser.setBounds(22, 214, 90, 30);
+		pnlChooseUser.add(btnframeAddUser);
+		
+		btnDeleteUser = new JButton("유저 삭제");
+		btnDeleteUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DataManager.deleteUser((String)list.getSelectedValue());
+				
+				list = new JList(DataManager.returnUserArray());
+				scrollPane.setViewportView(list);
+			}
+		});
+		btnDeleteUser.setBounds(128, 214, 90, 30);
+		pnlChooseUser.add(btnDeleteUser);
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		pnlAddUser = new JPanel();
+		pnlAddUser.setBounds(0, 0, 250, 300);
+		pnlAddUser.setLayout(null);
+		frameManager.getContentPane().add(pnlAddUser);
+		
+		username = new JTextField();
+		username.setBounds(94, 18, 136, 21);
+		username.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		username.setText("");
+        		username.setEditable(true);
+        	}
+        });
+		pnlAddUser.add(username);
+		username.setColumns(10);
+		
+		lblUserName = new JLabel("User Name");
+		lblUserName.setBounds(12, 21, 64, 15);
+		pnlAddUser.add(lblUserName);
+		
+		btnMakeUser = new JButton("유저 생성 [본 PC내]");
+		btnMakeUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String userlist[]=(DataManager.returnUserArray());
+				if(username.getText().length()<3){
+					username.setText("※3글자 미만!");
+					username.setEditable(false);
+					return ;
+				}
+				for(int i=0; i<userlist.length; i++)
+					if(userlist[i].matches(username.getText())==true){
+						username.setText("※유저 중복됨!");
+						username.setEditable(false);
+						return ;
+					}
+				if(username.getText()=="※3글자 미만!"||username.getText()=="※유저 중복됨!")
+					return ;
+				
+				DataManager.makeUserDirectory(username.getText());
+				username.setText("");
+				
+				list = new JList(DataManager.returnUserArray());
+				scrollPane.setViewportView(list);
+				
+				pnlAddUser.setVisible(false);
+				pnlChooseUser.setVisible(true);
+			}
+		});
+		btnMakeUser.setBounds(12, 49, 218, 60);
+		pnlAddUser.add(btnMakeUser);
+		
+		lblexplanation1 = new JLabel("계정을 로그인하시면 다른회원이 올린");
+		lblexplanation1.setBounds(12, 145, 224, 15);
+		pnlAddUser.add(lblexplanation1);
+		
+		lblexplanation2 = new JLabel("일정을 다운로드/구독 가능하며");
+		lblexplanation2.setBounds(12, 161, 224, 15);
+		pnlAddUser.add(lblexplanation2);
+		
+		lblexplanation3 = new JLabel("동기화로 정보를 보관할 수 있습니다.");
+		lblexplanation3.setBounds(12, 177, 224, 15);
+		pnlAddUser.add(lblexplanation3);
+		
+		lblexplanation4 = new JLabel("귀속시킬 계정이 있으십니까?");
+		lblexplanation4.setBounds(12, 193, 224, 15);
+		pnlAddUser.add(lblexplanation4);
+		
+		btnRegister = new JButton("지금 계정을 만들겠습니다.");
+		btnRegister.setBounds(12, 211, 218, 23);
+		pnlAddUser.add(btnRegister);
+		
+		btnReverter = new JButton("소지 계정을 귀속시키겠습니다.");
+		btnReverter.setBounds(12, 233, 218, 23);
+		pnlAddUser.add(btnReverter);
+	}
+}

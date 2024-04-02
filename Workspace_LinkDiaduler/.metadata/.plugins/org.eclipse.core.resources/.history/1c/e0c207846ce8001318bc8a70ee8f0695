@@ -1,0 +1,117 @@
+package com.linkdiaduler;
+
+import java.awt.*;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.Random;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class Capture {
+	
+	protected JFrame frameCapture;
+	
+	private JButton saveImage;
+	private Robot robot;
+	private BufferedImage bfImg;
+	
+	private String accessDate;
+	private String imagename=returnName();
+	private String url;
+	private JTextField textField;
+	private boolean customURL=false;
+	
+	public Capture(String accessDate){
+		this.accessDate=accessDate;
+		initialize();
+	}
+	
+	private void initialize(){
+		frameCapture = new JFrame();
+		frameCapture.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+					frameCapture.dispose();
+			}
+		});
+        frameCapture.setSize(300,200);
+		frameCapture.setTitle(accessDate+" - Capture");
+        frameCapture.setLocationRelativeTo(null);
+        
+        saveImage = new JButton("Capture");
+        frameCapture.getContentPane().add(saveImage);
+        
+        textField = new JTextField();
+        textField.setText("URL을 입력하세요. default=링크다이쥴러 홈페이지");
+        textField.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		textField.setText("");
+        		customURL=true;
+        	}
+        });
+   
+        saveImage.addMouseListener(new MouseAdapter() {
+			@Override
+        	public void mouseClicked(MouseEvent e) {
+        		if(frameCapture.getTitle()!="Click image to Save"){//실행후 바로 클릭시 캡쳐+캡쳐된 이미지 선명하게띄움
+        			try{
+        				robot = new Robot();
+	        			bfImg = new BufferedImage(frameCapture.getContentPane().getWidth(), frameCapture.getContentPane().getHeight(), BufferedImage.TYPE_INT_RGB);
+	        		
+	        			frameCapture.setOpacity(0f);
+	        			bfImg = robot.createScreenCapture(new Rectangle(frameCapture.getX()+frameCapture.getContentPane().getX()-1, frameCapture.getY()+frameCapture.getContentPane().getY()+5, frameCapture.getContentPane().getWidth(), frameCapture.getContentPane().getHeight()));
+	        			frameCapture.setOpacity(1f);
+
+	        			ImageIcon icon = new ImageIcon(bfImg);
+	        			saveImage.setIcon(icon);
+	        			saveImage.setVerticalTextPosition(SwingConstants.TOP);
+	        			frameCapture.setTitle("Click image to Save");
+	        			frameCapture.setSize(frameCapture.getWidth(), frameCapture.getHeight()+22);
+	        			frameCapture.getContentPane().add(textField, BorderLayout.SOUTH);
+        			}
+    	        	catch(Exception x){
+	        			x.printStackTrace();
+	        		}
+        		}
+        		
+        		else{ //캡쳐후 클릭시 캡쳐된 이미지는 이름을 랜덤 발급받아 저장되고,  해당유저 이미지인덱스에 이미지이름과 url이 추가됨
+        			try{
+        				url=textField.getText();
+    	     		   	File file = new File(DataManager.route+"data\\image\\"+imagename+".png");
+    	     		   	ImageIO.write(bfImg, "png", file);
+    	        	}
+    	        	catch(Exception x){
+    	        			x.printStackTrace();
+    	        	}
+        			if(!customURL)
+        				url=DataManager.defaultURL;
+        			DataManager.fixDecodedImage("add", accessDate, imagename, url);
+        			DataManager.saveIndex('i');
+        			frameCapture.dispose();
+        			
+        			Main.weekContentsChanger();
+        		}
+        	}
+        });// end of 마우스 리스너
+    }// end of initialize()
+	
+	public static String returnName(){	//이미지 이름 랜덤발급
+		while(true){
+		Random random = new Random();
+		char code1=(char)(random.nextInt(25)+65);
+		char code2=(char)(random.nextInt(25)+65);
+		String code3=String.format("%04d",random.nextInt(10000));
+		String formatedCode=(code1+""+code2+""+code3);
+		if(new File(DataManager.route+"data\\image\\"+formatedCode+".png").exists()==false)
+			return formatedCode;
+		}
+	}
+}

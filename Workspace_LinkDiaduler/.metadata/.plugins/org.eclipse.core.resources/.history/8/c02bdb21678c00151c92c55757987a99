@@ -1,0 +1,109 @@
+package com.thesophist.window.macro;
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.Font;
+import java.awt.Color;
+
+@SuppressWarnings("serial")
+public class JPanelHome extends JPanel {
+
+	public static DragDropList list;
+	
+	public JPanelHome() {
+		
+		setLayout(null);
+		
+		list = new DragDropList();
+		list.setBounds(10, 67, 269, 373);
+		add(list);
+		
+		JButton btnAddAction = new JButton("Add Action");
+		btnAddAction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Frame.nextPanel();
+			}
+		});
+		btnAddAction.setBounds(291, 164, 97, 34);
+		add(btnAddAction);
+		
+		JButton btnDelAction = new JButton("Del Action");
+		btnDelAction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				list.deleteElement(list.getSelectedIndex());
+			}
+		});
+		btnDelAction.setBounds(291, 208, 97, 34);
+		add(btnDelAction);
+		
+		JButton btnSaveMacro = new JButton("Save");
+		btnSaveMacro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FileInOutput.fileOutput();
+			}
+		});
+		btnSaveMacro.setBounds(291, 393, 97, 47);
+		add(btnSaveMacro);
+		
+		JButton btnPlay = new JButton("\u25B6");
+		btnPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				for (int i = 0; i < JPanelHome.list.getModel().getSize(); i++)
+					ControlRobot.unpackEvent(JPanelHome.list.getModel().getElementAt(i));
+			}
+		});
+		btnPlay.setBounds(229, 7, 50, 50);
+		add(btnPlay);
+		
+		JComboBox<?> cbChoose = new JComboBox<Object>();
+		cbChoose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		cbChoose.setBounds(10, 7, 207, 50);
+		add(cbChoose);
+		
+		JButton btnAddAction_1 = new JButton("Record");
+		btnAddAction_1.setBackground(new Color(250, 250, 210));
+		btnAddAction_1.setForeground(Color.RED);
+		btnAddAction_1.setFont(new Font("굴림", Font.BOLD, 18));
+		btnAddAction_1.setBounds(291, 67, 97, 60);
+		add(btnAddAction_1);
+	}
+	public void refreshJList(){
+		//list에 할당되었던 드래그드롭 삭제
+		list = null;
+		System.gc();
+		//list에 할당되었던 드래그드롭 삭제
+		
+		//이미 macrolist는 수정했으므로 JList 초기화만 해주면됨.
+		list = new DragDropList();
+		list.setBounds(10, 67, 269, 373);
+		Main.frameRefresh();
+	}
+	public void getLists(){
+		FileInOutput.macrolist=null;
+		FileInOutput.macrolist=new String[list.getModel().getSize()];
+		for (int i = 0; i < list.getModel().getSize(); i++) {
+            FileInOutput.macrolist[i] = list.getModel().getElementAt(i).toString();
+            System.out.println("Item = " +FileInOutput.macrolist[i]);
+        }
+	}
+	
+	void addKeyListener(){
+		addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {}			
+		});
+		setFocusable(true);
+		requestFocusInWindow();
+	}
+}

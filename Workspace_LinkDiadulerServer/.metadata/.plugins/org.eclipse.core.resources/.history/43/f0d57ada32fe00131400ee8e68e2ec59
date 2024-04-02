@@ -1,0 +1,80 @@
+package com.lindaserver;
+
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+/**
+ * 개별 클라이언트와 메세지를 주고 받는 스레드
+ *   Socket: 멤버변수, 생성자를 통해서 TestServer에서 할당 받는다.
+ * 1. extends Thread
+ * 2. run()
+ *   클라이언트의 메세지를 주고 받는 비즈니스(Socket)
+ * @author 관리자
+ *
+ */
+public class ServerThread extends Thread{
+	//멤버변수로 선언
+	private Socket socket;
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
+	private BufferedReader br = null;
+	private PrintWriter pw = null;
+	private String userIP = socket.getInetAddress().toString();
+
+	ServerThread(Socket s){//소켓가져옴
+		this.socket = s;
+	}
+	
+	//오버라이딩일 경우 throw 불가. 
+	public void run(){
+		try{
+			service();
+		}catch(IOException e){
+			System.out.println("**"+userIP+"가 접속종료.");
+		}finally{
+			try {
+				closeAll();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void service()throws IOException{
+		ois=new ObjectInputStream(socket.getInputStream());//객체 받았음.
+		CarrierFromClient carrierFC=(CarrierFromClient)ois.readObject();//CFC로 캐스팅.
+		String happening=carrierFC.happening;//캐리어로 캐스팅하여 happening 받아오고
+		
+		CarrierFromServer CFS;
+		switch(happening){//무슨일을 할까요 고갱님? 
+		case "REGISTER":
+			
+		case "LOGIN":
+		case "DOWNLOAD_WEEKINDEX":
+		case "UPLOAD_INDEX":
+		case "UPLOAD_IMAGE":
+		case "":
+		case "":
+		}
+		
+		
+		
+		oos=new ObjectOutputStream(socket.getOutputStream());
+		oos.writeObject(new CarrierFromServer());
+		oos.flush();
+	}
+	public void closeAll()throws IOException{
+		if (pw != null)
+			pw.close();
+		if (br != null)
+			br.close();
+		if (socket != null)
+			socket.close();
+	}
+}

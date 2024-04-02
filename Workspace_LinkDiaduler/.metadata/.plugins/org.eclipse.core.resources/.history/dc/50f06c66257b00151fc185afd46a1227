@@ -1,0 +1,39 @@
+package com.thesophist.window.macro;
+
+import java.awt.MouseInfo;
+import java.awt.Point;
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.Font;
+
+public class JPanelAddAction extends JPanel {
+	Point p;
+	/**
+	 * Create the panel.
+	 */
+	public JPanelAddAction() {
+		setLayout(null);
+		
+		JButton btnDetectCursor = new JButton("\uCEE4\uC11C\uC774\uB3D9");
+		btnDetectCursor.setBounds(10, 45, 94, 39);
+		add(btnDetectCursor);
+		
+		JButton btnClickCursor = new JButton("\uB9C8\uC6B0\uC2A4 \uC67C\uCABD \uD074\uB9AD");
+		btnClickCursor.setBounds(116, 45, 125, 39);
+		add(btnClickCursor);
+		
+		JLabel label = new JLabel("\uB9C8\uC6B0\uC2A4 \uC774\uBCA4\uD2B8");
+		label.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		label.setBounds(10, 10, 137, 25);
+		add(label);
+
+	}
+	void getCursorPoint(){
+		p = MouseInfo.getPointerInfo().getLocation();
+	}
+	void getKeyCode(){
+		
+	}
+}

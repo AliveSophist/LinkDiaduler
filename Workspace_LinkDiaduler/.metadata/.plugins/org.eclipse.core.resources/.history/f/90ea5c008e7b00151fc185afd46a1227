@@ -1,0 +1,54 @@
+package com.thesophist.window.macro;
+
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.StringTokenizer;
+
+public class ControlRobot {
+	Robot robot;
+	
+	public ControlRobot(){
+		try
+	    {
+			robot = new Robot();
+	      
+	    }
+	    catch (AWTException ae)
+	    {
+	      ae.printStackTrace();
+	    }
+	}
+	
+	public void eventMoveCursor(int x, int y){
+		robot.mouseMove(x, y);
+	}
+	public void eventMouseClick(){
+		robot.mousePress(MouseEvent.BUTTON1);
+		robot.mouseRelease(MouseEvent.BUTTON1);
+	}
+	public void eventKeyPress(char keyChar){
+		robot.keyPress(KeyEvent.getExtendedKeyCodeForChar(keyChar));
+	}
+	public void eventKeyRelease(char keyChar){
+		robot.keyRelease(KeyEvent.getExtendedKeyCodeForChar(keyChar));
+	}
+	public void eventDelayThread(){
+		robot.delay(500);
+	}
+	
+	public void packKeyEvent(String event, int keyCode){
+		
+	}
+	public void packMouseEvent(String event, int mouseButton){
+		
+	}
+	
+	public void unpackEvent(String macro){
+		if(!macro.contains("mouse"))
+			StringTokenizer st = new StringTokenizer(macro," ");
+        
+	}
+}

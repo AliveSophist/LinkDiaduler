@@ -1,0 +1,56 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+
+import java.awt.Color;
+import java.awt.Window.Type;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+
+public class Settings {
+	
+	public static String savedID, savedPW;
+	public static Color background = new Color(255, 255, 153);
+	
+	public JFrame frameSettings;
+	private JCheckBox chckbxCapture;
+	private JComboBox cbImageModeNum;
+	private JLabel lblImageMode1, lblImageMode2;
+	private JButton btnApply;
+	
+	public Settings() {
+		initialize();
+	}
+
+	
+	private void initialize() {
+		frameSettings = new JFrame();
+		frameSettings.setResizable(false);
+		frameSettings.setType(Type.UTILITY);
+		frameSettings.setBounds(100, 100, 300, 400);
+		frameSettings.getContentPane().setLayout(null);
+		
+		chckbxCapture = new JCheckBox("이미지 추가시 무조건 캡쳐모드");
+		chckbxCapture.setBounds(8, 6, 276, 23);
+		frameSettings.getContentPane().add(chckbxCapture);
+		
+		lblImageMode1 = new JLabel("이미지 모드시");
+		lblImageMode1.setBounds(12, 35, 90, 15);
+		frameSettings.getContentPane().add(lblImageMode1);
+		
+		cbImageModeNum = new JComboBox();
+		cbImageModeNum.setBounds(99, 32, 43, 21);
+		frameSettings.getContentPane().add(cbImageModeNum);
+		
+		lblImageMode2 = new JLabel("장으로");
+		lblImageMode2.setBounds(154, 35, 57, 15);
+		frameSettings.getContentPane().add(lblImageMode2);
+		
+		btnApply = new JButton("\uC801\uC6A9");
+		btnApply.setBounds(220, 334, 64, 32);
+		frameSettings.getContentPane().add(btnApply);
+	}
+}

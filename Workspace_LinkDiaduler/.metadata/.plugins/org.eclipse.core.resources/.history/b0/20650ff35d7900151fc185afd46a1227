@@ -1,0 +1,51 @@
+package com.thesophist.window.macro;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
+
+public class FileInOutput {
+	public static String[] savedlist;
+	public static String[] macrolist;
+	
+	public static void fileInput() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader("c:/out.txt"));
+        String temp="";
+
+        while(true) {
+        	String line = br.readLine();
+        	if (line==null)
+        		break;
+        	temp=temp+line+"||";
+        }
+        
+        StringTokenizer st = new StringTokenizer(temp,"||");
+        
+        savedlist=new String[st.countTokens()];
+        macrolist=new String[st.countTokens()];
+        
+        for(int i=0;st.hasMoreTokens();i++) {
+            savedlist[i]=st.nextToken();
+            System.out.println(savedlist[i]);
+        }
+        
+        for(int i=0;i<savedlist.length;i++) {
+            macrolist[i]=st.nextToken();
+            System.out.println(savedlist[i]);
+        }
+	}
+        
+	public static void fileOutput() throws IOException {//savesavedlist
+        PrintWriter pw = new PrintWriter("c:/out.txt");
+        for(int i=0; i<savedlist.length; i++) {
+        	pw.println(savedlist[i]);
+        }
+        pw.close();
+    }
+	
+	public void updateLists(String[] updater){
+		savedlist=updater;
+	}
+}

@@ -1,0 +1,68 @@
+package com.linkdiaduler;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import javax.swing.ImageIcon;
+
+public class ClientManager {
+	Socket socket;
+	ObjectOutputStream oos;
+	ObjectInputStream ois;
+	
+	public void connect(String happening)throws IOException, ClassNotFoundException{
+		try {
+			socket=new Socket("61.75.245.230", 12345);
+			ois=new ObjectInputStream(socket.getInputStream());
+			oos=new ObjectOutputStream(socket.getOutputStream());
+			
+			CarrierFromClient CFC;
+			
+			switch(happening){
+			case "Register":
+				CarrierFromClient(happening, String memberID, String memberPW, boolean acceptSSC, String email);
+				break;
+			case "Login":
+				CarrierFromClient(happening, String memberID, String memberPW, boolean acceptSSC, String email);
+				break;
+			case "DownloadIndexs":
+				CarrierFromClient(happening, String serialCode, String accessDate);
+				break;
+			case "UploadIndex":
+				CarrierFromClient(happening, String serialCode, String accessDate, char kind, String fixIndex);
+				break;
+			case "UploadImage-add":
+				CarrierFromClient(String happening, ImageIcon addImage);
+				break;
+			case "UploadImage-del":
+				break;
+			case "Subscribe-show":
+				break;
+			case "Subscribe-add":
+				break;
+			case "Subscribe-del":
+				break;
+			}
+			oos.writeObject(CFC);
+			
+			
+			CarrierFromServer carrierFS=(CarrierFromServer)ois.readObject();//객체받고 CFC로 캐스팅!
+			
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

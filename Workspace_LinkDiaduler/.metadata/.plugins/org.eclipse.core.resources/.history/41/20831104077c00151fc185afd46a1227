@@ -1,0 +1,108 @@
+package com.thesophist.window.macro;
+
+import java.awt.MouseInfo;
+import java.awt.Point;
+
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+
+import java.awt.Font;
+import java.awt.Choice;
+import java.awt.Button;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.Label;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class JPanelAddAction extends JPanel {
+	private static Choice chMouseButton, chMouseEvent, chOneKeyButton, chOneKeyEvent;
+	private Point p;
+	private JLabel lblCursorMove;
+	private Label label;
+	/**
+	 * Create the panel.
+	 */
+	public JPanelAddAction() {
+		addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode()==KeyEvent.VK_A){
+					getCursorPoint();
+					JPanelHome.list.addElement(ControlRobot.packMouseEvent("move",p.x*10000+p.y)[0]);
+					Frame.previousPanel();
+				}
+			}
+			public void keyReleased(KeyEvent e) {}			
+		});
+        setFocusable(true);
+        requestFocusInWindow();
+		setLayout(null);
+		
+		
+		JLabel lblMouseEvent = new JLabel("\uB9C8\uC6B0\uC2A4 \uC774\uBCA4\uD2B8");
+		lblMouseEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblMouseEvent.setBounds(10, 104, 137, 25);
+		add(lblMouseEvent);
+		
+		chMouseButton = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_BUTTON_SPECIES.length; i++)
+			chMouseButton.addItem(ControlRobot.MOUSE_BUTTON_SPECIES[i]);
+		chMouseButton.setBounds(10, 135, 100, 21);
+		add(chMouseButton);
+		
+		chMouseEvent = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_EVENTS_SPECIES.length; i++)
+			chMouseEvent.addItem(ControlRobot.MOUSE_EVENTS_SPECIES[i]);
+		chMouseEvent.setBounds(116, 135, 100, 21);
+		add(chMouseEvent);
+		
+		Button btnAddMouseEvent = new Button("\uC0DD\uC131");
+		btnAddMouseEvent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String temp[]=ControlRobot.packMouseEvent(chMouseEvent.getSelectedItem(),ControlRobot.toMouseButtonCode(chMouseButton.getSelectedItem()));
+				for(int i=0; i<temp.length; i++)
+					JPanelHome.list.addElement(temp[i]);
+				Frame.previousPanel();
+			}
+		});
+		btnAddMouseEvent.setBounds(314, 135, 76, 50);
+		add(btnAddMouseEvent);
+		
+		
+		
+		JLabel lblKeyEvent = new JLabel("\uD0A4\uBCF4\uB4DC \uC774\uBCA4\uD2B8");
+		lblKeyEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblKeyEvent.setBounds(10, 195, 137, 25);
+		add(lblKeyEvent);
+		
+		chOneKeyButton = new Choice();
+		for(int i=0; i<ControlRobot.KEY_BUTTON_SPECIES.length; i++)
+			chOneKeyButton.addItem(ControlRobot.KEY_BUTTON_SPECIES[i]);
+		chOneKeyButton.setBounds(10, 226, 100, 21);
+		add(chOneKeyButton);
+		
+		chOneKeyEvent = new Choice();
+		for(int i=0; i<ControlRobot.KEY_EVENTS_SPECIES.length; i++)
+			chOneKeyEvent.addItem(ControlRobot.KEY_EVENTS_SPECIES[i]);
+		chOneKeyEvent.setBounds(116, 226, 100, 21);
+		add(chOneKeyEvent);
+		
+		Button btnAddKeyEvent = new Button("\uC0DD\uC131");
+		btnAddKeyEvent.setBounds(314, 226, 76, 50);
+		add(btnAddKeyEvent);
+		
+		lblCursorMove = new JLabel("\uCEE4\uC11C\uC774\uB3D9");
+		lblCursorMove.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblCursorMove.setBounds(12, 10, 137, 25);
+		add(lblCursorMove);
+		
+		label = new Label("\uC774\uB3D9\uD560 \uC704\uCE58\uC5D0 \uCEE4\uC11C\uB97C \uB193\uACE0 A\uB97C \uB204\uB974\uC2ED\uC2DC\uC624.");
+		label.setBounds(10, 41, 235, 23);
+		add(label);
+	}
+	void getCursorPoint(){
+		p = MouseInfo.getPointerInfo().getLocation();
+	}
+}

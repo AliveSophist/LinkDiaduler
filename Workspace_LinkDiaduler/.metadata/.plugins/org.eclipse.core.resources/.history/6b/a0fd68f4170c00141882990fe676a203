@@ -1,0 +1,116 @@
+package com.linkdiaduler;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Window.Type;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+public class RGBCreater implements ChangeListener{
+
+	JSlider sdRed,sdGreen,sdBlue;
+	JLabel lblRed,lblGreen,lblBlue;
+
+	JPanel pColor;
+
+	//rgb값 설정
+	int r,g,b; 
+
+	private JFrame frameRGBCreater;
+
+	public RGBCreater(int r, int g, int b){
+		initialize();
+		this.r=r;
+		this.g=g;
+		this.b=b;
+	}
+
+	public void initialize()
+	{
+		frameRGBCreater = new JFrame();
+		frameRGBCreater.setResizable(false);
+		frameRGBCreater.setType(Type.UTILITY);
+		frameRGBCreater.setBounds(300,100,400,400);
+		frameRGBCreater.getContentPane().setBackground(new Color(255, 255, 200));
+		frameRGBCreater.setVisible(true);
+
+		JPanel p1=new JPanel();
+		JPanel p2=new JPanel();
+		JPanel p3=new JPanel();
+		JPanel pTop=new JPanel(new GridLayout(3,1));
+
+		frameRGBCreater.getContentPane().setLayout(new GridLayout(2,1));
+		//sb.setLayout(new BorderLayout());
+
+		sdRed=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblRed=new JLabel("255",JLabel.CENTER);
+		p1.add(new JLabel("Red"));
+		p1.add(sdRed);
+		p1.add(lblRed);
+		pTop.add(p1);
+
+		sdGreen=new JSlider(JSlider.HORIZONTAL,0,255,0);
+		lblGreen=new JLabel("0",JLabel.CENTER);
+		p2.add(new JLabel("Green"));
+		p2.add(sdGreen);
+		p2.add(lblGreen);
+		pTop.add(p2);
+
+		sdBlue=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblBlue=new JLabel("255",JLabel.CENTER);
+		p3.add(new JLabel("Blue"));
+		p3.add(sdBlue);
+		p3.add(lblBlue);
+		pTop.add(p3);
+
+		frameRGBCreater.getContentPane().add("North",pTop);
+		
+		pColor=new JPanel();
+		pColor.setBackground(new Color(255,0,255));
+		frameRGBCreater.getContentPane().add(pColor);
+
+
+		 //이벤트 발생
+
+		sdRed.addChangeListener(this);
+		sdGreen.addChangeListener(this);
+		sdBlue.addChangeListener(this);
+	 }
+
+
+	public void stateChanged(ChangeEvent e)
+	{
+		Object ob=e.getSource();
+
+		if(ob==sdRed)
+			r=sdRed.getValue();
+		else if(ob==sdGreen)
+			g=sdGreen.getValue();
+		else if(ob==sdBlue)
+			b=sdBlue.getValue();
+
+		lblRed.setText(String.valueOf(r));
+		lblBlue.setText(String.valueOf(b));
+		lblGreen.setText(String.valueOf(g));
+
+		pColor.setBackground(new Color(r,g,b));
+	}
+
+	
+	 public static void main(String[] args)
+	 {
+		 RGBCreater rc= new RGBCreater(255, 255, 240);
+	 }
+
+}

@@ -1,0 +1,65 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+import javax.swing.JButton;
+
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.Window.Type;
+
+public class ImageContainer {
+
+	public JFrame frameImageContainer;
+	
+	private JButton Capture, LoadImage;
+	
+	private String accessDate;
+	
+	String url;
+
+
+	public ImageContainer(String accessDate) {
+		this.accessDate=accessDate;
+		initialize();
+	}
+
+	private void initialize() {
+		frameImageContainer = new JFrame();
+		frameImageContainer.setAlwaysOnTop(true);
+		frameImageContainer.setType(Type.UTILITY);
+		frameImageContainer.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+					frameImageContainer.dispose();
+			}
+		});
+		frameImageContainer.setBounds(100, 100, 300, 180);
+		frameImageContainer.getContentPane().setLayout(null);
+		frameImageContainer.setTitle(accessDate+" - Image Container");
+		frameImageContainer.setLocationRelativeTo(null);
+		
+		Capture = new JButton("Capture");
+		Capture.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.openframeCapture(accessDate);
+				frameImageContainer.dispose();
+			}
+		});
+		Capture.setBounds(12, 10, 125, 122);
+		frameImageContainer.getContentPane().add(Capture);
+		
+		LoadImage = new JButton("LoadImage");
+		LoadImage.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Toolkit.getDefaultToolkit().getImage(url);
+			}
+		});
+		LoadImage.setBounds(149, 10, 125, 122);
+		frameImageContainer.getContentPane().add(LoadImage);
+	}
+}

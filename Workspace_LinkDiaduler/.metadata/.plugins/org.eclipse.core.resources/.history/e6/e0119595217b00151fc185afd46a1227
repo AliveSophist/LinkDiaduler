@@ -1,0 +1,77 @@
+package com.thesophist.window.macro;
+
+import javax.swing.JPanel;
+import javax.swing.JList;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class JPanelHome extends JPanel {
+
+	public static DragDropList list;
+	
+	public JPanelHome() {
+		
+		setLayout(null);
+		
+		list = new DragDropList();
+		list.setBounds(10, 67, 269, 373);
+		add(list);
+		
+		JButton btnAddAction = new JButton("Add Action");
+		btnAddAction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Frame.nextPanel();				
+			}
+		});
+		btnAddAction.setBounds(291, 64, 97, 47);
+		add(btnAddAction);
+		
+		JButton btnDelAction = new JButton("Del Action");
+		btnDelAction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				list.deleteElement();
+			}
+		});
+		btnDelAction.setBounds(291, 121, 97, 47);
+		add(btnDelAction);
+		
+		JButton btnSaveMacro = new JButton("Save");
+		btnSaveMacro.setBounds(291, 393, 97, 47);
+		add(btnSaveMacro);
+		
+		JButton btnPlay = new JButton("\u25B6");
+		btnPlay.setBounds(229, 7, 50, 50);
+		add(btnPlay);
+		
+		JComboBox cbChoose = new JComboBox();
+		cbChoose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		cbChoose.setBounds(10, 7, 207, 50);
+		add(cbChoose);
+	}
+	public void refreshJList(){
+		//list에 할당되었던 드래그드롭 삭제
+		list = null;
+		System.gc();
+		//list에 할당되었던 드래그드롭 삭제
+		
+		//이미 savedlist는 수정했으므로 JList 초기화만 해주면됨.
+		list = new DragDropList();
+		list.setBounds(10, 67, 269, 373);
+		Main.frameRefresh();
+	}
+	public void getLists(){
+		FileInOutput.savedlist=null;
+		FileInOutput.savedlist=new String[list.getModel().getSize()];
+		for (int i = 0; i < list.getModel().getSize(); i++) {
+            FileInOutput.savedlist[i] = list.getModel().getElementAt(i).toString();
+            System.out.println("Item = " +FileInOutput.savedlist[i]);
+        }
+	}
+}

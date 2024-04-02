@@ -1,0 +1,63 @@
+package com.thesophist.window.macro;
+
+import java.awt.MouseInfo;
+import java.awt.Point;
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.Font;
+import java.awt.Choice;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+
+public class JPanelAddAction extends JPanel {
+	Point p;
+	/**
+	 * Create the panel.
+	 */
+	public JPanelAddAction() {
+		setLayout(null);
+		
+		JLabel lblMouseEvent = new JLabel("\uB9C8\uC6B0\uC2A4 \uC774\uBCA4\uD2B8");
+		lblMouseEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblMouseEvent.setBounds(10, 10, 137, 25);
+		add(lblMouseEvent);
+		
+		JLabel lblKeyEvent = new JLabel("\uD0A4\uBCF4\uB4DC \uC774\uBCA4\uD2B8");
+		lblKeyEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblKeyEvent.setBounds(10, 195, 137, 25);
+		add(lblKeyEvent);
+		
+		Choice chMouseSpecies = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_MACRO_SPECIES.length; i++)
+			chMouseSpecies.addItem(ControlRobot.MOUSE_MACRO_SPECIES[i]);
+		chMouseSpecies.setBounds(10, 41, 100, 21);
+		add(chMouseSpecies);
+		
+		Choice chMouseEvent = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_MACRO_EVENTS.length; i++)
+			chMouseEvent.addItem(ControlRobot.MOUSE_MACRO_EVENTS[i]);
+		chMouseEvent.setBounds(116, 41, 100, 21);
+		add(chMouseEvent);
+		
+		Choice chOneKeySpecies = new Choice();
+		for(int i=0; i<ControlRobot.KEY_MACRO_SPECIES.length; i++)
+			chOneKeySpecies.addItem(ControlRobot.KEY_MACRO_SPECIES[i]);
+		chOneKeySpecies.setBounds(10, 226, 100, 21);
+		add(chOneKeySpecies);
+		
+		Choice chOneKeyEvent = new Choice();
+		for(int i=0; i<ControlRobot.KEY_MACRO_EVENTS.length; i++)
+			chOneKeyEvent.addItem(ControlRobot.KEY_MACRO_EVENTS[i]);
+		chOneKeyEvent.setBounds(116, 226, 100, 21);
+		add(chOneKeyEvent);
+
+	}
+	void getCursorPoint(){
+		p = MouseInfo.getPointerInfo().getLocation();
+	}
+	void getKeyCode(){
+		
+	}
+}

@@ -1,0 +1,150 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.Window.Type;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+public class Settings implements ChangeListener{
+	
+	public static String savedID, savedPW;
+	public static int[] backgroundColor=new int[3];
+	public static int[] buttonColor=new int[3];
+	public static Color background = new Color(255, 255, 153);
+	public static Color button = new Color(255, 255, 204);
+	int r,g,b;
+	
+	public JFrame frameSettings;
+	private JComboBox cbImageModeNum;
+	private JLabel lblImageMode1, lblImageMode2;
+	private JButton btnApply;
+	
+	private JPanel pnlRGBControler, pnlRed, pnlBlue, pnlGreen;
+	private JSlider sdRed,sdGreen,sdBlue;
+	private JLabel lblRed,lblGreen,lblBlue;
+	private JButton btnGetRGB;
+	private JPanel pnlRGBShower;
+
+	
+	public Settings() {
+		initialize();
+	}
+
+	
+	private void initialize() {
+		frameSettings = new JFrame();
+		frameSettings.setResizable(false);
+		frameSettings.setType(Type.UTILITY);
+		frameSettings.setBounds(100, 100, 300, 400);
+		frameSettings.getContentPane().setLayout(null);
+		
+		JPanel pnlSettings = new JPanel();
+		pnlSettings.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width/2-140, Toolkit.getDefaultToolkit().getScreenSize().height/2-180, 294, 376);
+		frameSettings.getContentPane().add(pnlSettings);
+		pnlSettings.setLayout(null);
+		
+		lblImageMode1 = new JLabel("이미지 모드시");
+		lblImageMode1.setBounds(12, 43, 90, 15);
+		pnlSettings.add(lblImageMode1);
+		
+		cbImageModeNum = new JComboBox();
+		cbImageModeNum.setBounds(102, 39, 43, 21);
+		pnlSettings.add(cbImageModeNum);
+		
+		lblImageMode2 = new JLabel("장으로");
+		lblImageMode2.setBounds(149, 43, 57, 15);
+		pnlSettings.add(lblImageMode2);
+		
+		btnApply = new JButton("\uC801\uC6A9");
+		btnApply.setBounds(206, 330, 76, 36);
+		pnlSettings.add(btnApply);
+		
+		
+		
+		
+		JPanel pnlRGBSettings = new JPanel();
+		pnlRGBSettings.setBounds(0, 0, 294, 376);
+		frameSettings.getContentPane().add(pnlRGBSettings);
+		pnlRGBSettings.setVisible(false);
+		
+		pnlRed=new JPanel();
+		pnlBlue=new JPanel();
+		pnlGreen=new JPanel();
+		pnlRGBControler=new JPanel(new GridLayout(3,1));
+
+		pnlRGBSettings.setLayout(new GridLayout(2,1));
+		//sb.setLayout(new BorderLayout());
+
+		sdRed=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblRed=new JLabel("255",JLabel.CENTER);
+		pnlRed.add(new JLabel("Red"));
+		pnlRed.add(sdRed);
+		pnlRed.add(lblRed);
+		pnlRGBControler.add(pnlRed);
+
+		sdGreen=new JSlider(JSlider.HORIZONTAL,0,255,0);
+		lblGreen=new JLabel("0",JLabel.CENTER);
+		pnlBlue.add(new JLabel("Green"));
+		pnlBlue.add(sdGreen);
+		pnlBlue.add(lblGreen);
+		pnlRGBControler.add(pnlBlue);
+
+		sdBlue=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblBlue=new JLabel("255",JLabel.CENTER);
+		pnlGreen.add(new JLabel("Blue"));
+		pnlGreen.add(sdBlue);
+		pnlGreen.add(lblBlue);
+		pnlRGBControler.add(pnlGreen);
+
+		pnlRGBSettings.add("North",pnlRGBControler);
+		
+		pnlRGBShower=new JPanel();
+		pnlRGBShower.setBackground(new Color(255,0,255));
+		pnlRGBSettings.add(pnlRGBShower);
+		pnlRGBShower.setLayout(null);
+		
+		btnGetRGB = new JButton("Get Color");
+		btnGetRGB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		btnGetRGB.setBackground(Color.WHITE);
+		btnGetRGB.setBounds(12, 143, 85, 35);
+		pnlRGBShower.add(btnGetRGB);
+
+		sdRed.addChangeListener(this);
+		sdGreen.addChangeListener(this);
+		sdBlue.addChangeListener(this);
+	}
+	public void stateChanged(ChangeEvent e)
+	{
+		Object ob=e.getSource();
+
+		if(ob==sdRed)
+			r=sdRed.getValue();
+		else if(ob==sdGreen)
+			g=sdGreen.getValue();
+		else if(ob==sdBlue)
+			b=sdBlue.getValue();
+
+		lblRed.setText(String.valueOf(r));
+		lblBlue.setText(String.valueOf(b));
+		lblGreen.setText(String.valueOf(g));
+
+		pnlRGBShower.setBackground(new Color(r,g,b));
+	}
+}

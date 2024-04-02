@@ -1,0 +1,130 @@
+package com.linkdiaduler;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Window.Type;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class RGBCreater implements ChangeListener{
+
+	private JPanel pnlRGBControler, pnlRed, pnlBlue, pnlGreen;
+	private JSlider sdRed,sdGreen,sdBlue;
+	private JLabel lblRed,lblGreen,lblBlue;
+	private JButton btnGetRGB;
+	private JPanel pnlRGBShower;
+
+	//rgb값 설정
+	int r,g,b; 
+
+	private JFrame frameRGBCreater;
+
+	public RGBCreater(int r, int g, int b){
+		initialize();
+		this.r=r;
+		this.g=g;
+		this.b=b;
+	}
+
+	public void initialize()
+	{
+		frameRGBCreater = new JFrame();
+		frameRGBCreater.setResizable(false);
+		frameRGBCreater.setType(Type.UTILITY);
+		frameRGBCreater.setBounds(300,100,333,250);
+		frameRGBCreater.getContentPane().setBackground(new Color(255, 255, 200));
+		frameRGBCreater.setVisible(true);
+
+		pnlRed=new JPanel();
+		pnlBlue=new JPanel();
+		pnlGreen=new JPanel();
+		pnlRGBControler=new JPanel(new GridLayout(3,1));
+
+		frameRGBCreater.getContentPane().setLayout(new GridLayout(2,1));
+		//sb.setLayout(new BorderLayout());
+
+		sdRed=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblRed=new JLabel("255",JLabel.CENTER);
+		pnlRed.add(new JLabel("Red"));
+		pnlRed.add(sdRed);
+		pnlRed.add(lblRed);
+		pnlRGBControler.add(pnlRed);
+
+		sdGreen=new JSlider(JSlider.HORIZONTAL,0,255,0);
+		lblGreen=new JLabel("0",JLabel.CENTER);
+		pnlBlue.add(new JLabel("Green"));
+		pnlBlue.add(sdGreen);
+		pnlBlue.add(lblGreen);
+		pnlRGBControler.add(pnlBlue);
+
+		sdBlue=new JSlider(JSlider.HORIZONTAL,0,255,255);
+		lblBlue=new JLabel("255",JLabel.CENTER);
+		pnlGreen.add(new JLabel("Blue"));
+		pnlGreen.add(sdBlue);
+		pnlGreen.add(lblBlue);
+		pnlRGBControler.add(pnlGreen);
+
+		frameRGBCreater.getContentPane().add("North",pnlRGBControler);
+		
+		pnlRGBShower=new JPanel();
+		pnlRGBShower.setBackground(new Color(255,0,255));
+		frameRGBCreater.getContentPane().add(pnlRGBShower);
+		pnlRGBShower.setLayout(null);
+		
+		btnGetRGB = new JButton("Get Color");
+		btnGetRGB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		btnGetRGB.setBackground(Color.WHITE);
+		btnGetRGB.setBounds(230, 80, 85, 23);
+		pnlRGBShower.add(btnGetRGB);
+
+
+		 //이벤트 발생
+
+		sdRed.addChangeListener(this);
+		sdGreen.addChangeListener(this);
+		sdBlue.addChangeListener(this);
+	 }
+
+
+	public void stateChanged(ChangeEvent e)
+	{
+		Object ob=e.getSource();
+
+		if(ob==sdRed)
+			r=sdRed.getValue();
+		else if(ob==sdGreen)
+			g=sdGreen.getValue();
+		else if(ob==sdBlue)
+			b=sdBlue.getValue();
+
+		lblRed.setText(String.valueOf(r));
+		lblBlue.setText(String.valueOf(b));
+		lblGreen.setText(String.valueOf(g));
+
+		pnlRGBShower.setBackground(new Color(r,g,b));
+	}
+
+	
+	 public static void main(String[] args)
+	 {
+		 RGBCreater rc= new RGBCreater(255, 255, 240);
+	 }
+}

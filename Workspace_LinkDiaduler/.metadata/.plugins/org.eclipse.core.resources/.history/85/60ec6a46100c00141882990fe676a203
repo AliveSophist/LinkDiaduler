@@ -1,0 +1,426 @@
+package com.linkdiaduler;
+
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JList;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import java.awt.Toolkit;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.Font;
+public class UserManager{
+	
+	public JFrame frameManager;
+	//유저모드 선택화면
+	private JPanel pnlChooseMode;
+	private JLabel lblWelcome;
+	private JButton btnOnlineMode, btnOfflineMode;
+	//온라인유저 로그인화면
+	private JPanel pnlLoginOnlineUser;
+	private JLabel lblID, lblPassword;
+	private JTextField IDField, PWField;
+	private JButton btnLogin, btnRegisterFromOn;
+	private JCheckBox chckbxIdpw;
+	//온라인유저 가입화면
+	private JPanel pnlRegisterOnlineUser;
+	private JLabel lblRegisterID, lblRegisterPW, lblRegisterNickname, lblRegisterEmail;
+	private JTextField tfRegisterID, tfRegisterPW, tfRegisterNickname, tfRegisterEmail;
+	private JCheckBox chckbxAcceptSharing;
+	private JButton btnRegister;
+	//오프라인유저 선택화면
+	private JPanel pnlChooseOfflineUser;
+	private JLabel lblLoading;
+	private JScrollPane scrollPane;
+	private JList<?> list;
+	private JButton btnChoiceUser, btnframeAddUser, btnDeleteUser;
+	//오프라인유저 추가화면
+	private JPanel pnlAddOfflineUser;
+	private JTextField username;
+	private JLabel lblUserName, lblexplanation1, lblexplanation2, lblexplanation3, lblexplanation4;
+	private JButton btnRegisterFromOff, btnMakeUser;
+	
+	private BufferedImage loading, lindaicon;
+
+	public UserManager() throws IOException {
+		loading=DataManager.loadimage("loading", "gif");
+		lindaicon=DataManager.loadimage("Linda", "png");
+		
+		initialize();
+		pnlChooseMode.setVisible(true);
+		pnlLoginOnlineUser.setVisible(false);
+		pnlRegisterOnlineUser.setVisible(false);
+		pnlChooseOfflineUser.setVisible(false);
+		pnlAddOfflineUser.setVisible(false);
+	}
+
+	private void initialize() {
+		frameManager = new JFrame();
+		frameManager.setResizable(false);
+		frameManager.setTitle("UserManager");
+		frameManager.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width/2-125, Toolkit.getDefaultToolkit().getScreenSize().height/2-150, 250, 290);
+		frameManager.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameManager.getContentPane().setLayout(null);
+		frameManager.setIconImage(lindaicon);
+		
+		pnlChooseMode = new JPanel();
+		pnlChooseMode.setBackground(new Color(255, 255, 102));
+		pnlChooseMode.setBounds(0, 0, 244, 262);
+		frameManager.getContentPane().add(pnlChooseMode);
+		pnlChooseMode.setLayout(null);
+		
+		lblWelcome = new JLabel("Welcome to Link Diaduler!");
+		lblWelcome.setForeground(new Color(204, 51, 0));
+		lblWelcome.setFont(new Font("굴림", Font.BOLD, 13));
+		lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWelcome.setBounds(12, 10, 220, 46);
+		pnlChooseMode.add(lblWelcome);
+		
+		btnOfflineMode = new JButton("Offline");
+		btnOfflineMode.setForeground(new Color(204, 51, 0));
+		btnOfflineMode.setFont(new Font("궁서", Font.BOLD, 18));
+		btnOfflineMode.setBackground(new Color(255, 255, 153));
+		btnOfflineMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlChooseMode.setVisible(false);
+				pnlChooseOfflineUser.setVisible(true);
+			}
+		});
+		btnOfflineMode.setBounds(12, 66, 111, 186);
+		pnlChooseMode.add(btnOfflineMode);
+		
+		btnOnlineMode = new JButton("Online");
+		btnOnlineMode.setForeground(new Color(204, 51, 0));
+		btnOnlineMode.setFont(new Font("궁서", Font.BOLD, 18));
+		btnOnlineMode.setBackground(new Color(255, 255, 153));
+		btnOnlineMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlChooseMode.setVisible(false);
+				pnlLoginOnlineUser.setVisible(true);
+				DataManager.onlinemode=true;
+				DateManager.limitEnd=2051;
+			}
+		});
+		btnOnlineMode.setBounds(121, 66, 111, 186);
+		pnlChooseMode.add(btnOnlineMode);
+		
+		lblLoading = new JLabel(new ImageIcon(loading));
+		lblLoading.setBounds(0, 0, 244, 262);
+		pnlChooseMode.add(lblLoading);
+		lblLoading.setVisible(false);
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		pnlLoginOnlineUser = new JPanel();
+		pnlLoginOnlineUser.setBackground(new Color(255, 255, 102));
+		pnlLoginOnlineUser.setBounds(0, 0, 244, 262);
+		frameManager.getContentPane().add(pnlLoginOnlineUser);
+		pnlLoginOnlineUser.setLayout(null);
+		pnlLoginOnlineUser.setVisible(false);
+		
+		lblID = new JLabel("ID");
+		lblID.setHorizontalAlignment(SwingConstants.CENTER);
+		lblID.setBounds(8, 58, 81, 24);
+		pnlLoginOnlineUser.add(lblID);
+		
+		lblPassword = new JLabel("PASSWORD");
+		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPassword.setBounds(8, 92, 81, 24);
+		pnlLoginOnlineUser.add(lblPassword);
+		
+		IDField = new JTextField();
+		IDField.setBounds(101, 60, 116, 21);
+		pnlLoginOnlineUser.add(IDField);
+		IDField.setColumns(10);
+		
+		PWField = new JTextField();
+		PWField.setColumns(10);
+		PWField.setBounds(101, 94, 116, 21);
+		pnlLoginOnlineUser.add(PWField);
+		
+		btnLogin = new JButton("Login");
+		btnLogin.setBackground(new Color(255, 255, 153));
+		btnLogin.setForeground(new Color(0, 0, 0));
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(ClientManager.connect(new CarrierFromClient(IDField.getText(), PWField.getText()))){
+					if(chckbxIdpw.isSelected()){
+						Settings.savedID=IDField.getText();
+						Settings.savedPW=PWField.getText();
+					}
+					else{
+						Settings.savedID=null;
+						Settings.savedPW=null;
+					}
+					
+					Main.openframeHome();
+					frameManager.dispose();
+				}
+			}
+		});
+		btnLogin.setBounds(136, 126, 81, 40);
+		pnlLoginOnlineUser.add(btnLogin);
+		
+		btnRegisterFromOn = new JButton("Register");
+		btnRegisterFromOn.setBackground(new Color(255, 255, 153));
+		btnRegisterFromOn.setForeground(new Color(0, 0, 0));
+		btnRegisterFromOn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlLoginOnlineUser.setVisible(false);
+				pnlRegisterOnlineUser.setVisible(true);
+			}
+		});
+		btnRegisterFromOn.setBounds(8, 229, 88, 23);
+		pnlLoginOnlineUser.add(btnRegisterFromOn);
+		
+		chckbxIdpw = new JCheckBox(" ID / PW \uAE30\uC5B5");
+		chckbxIdpw.setBackground(new Color(255, 255, 102));
+		chckbxIdpw.setBounds(8, 135, 101, 23);
+		pnlLoginOnlineUser.add(chckbxIdpw);
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		pnlRegisterOnlineUser = new JPanel();
+		pnlRegisterOnlineUser.setBackground(new Color(255, 255, 102));
+		pnlRegisterOnlineUser.setBounds(0, 0, 244, 262);
+		frameManager.getContentPane().add(pnlRegisterOnlineUser);
+		pnlRegisterOnlineUser.setLayout(null);
+		pnlRegisterOnlineUser.setVisible(false);
+		
+		lblRegisterID = new JLabel("ID");
+		lblRegisterID.setBounds(25, 45, 81, 15);
+		pnlRegisterOnlineUser.add(lblRegisterID);
+		
+		lblRegisterPW = new JLabel("PASSWORD");
+		lblRegisterPW.setBounds(25, 70, 81, 15);
+		pnlRegisterOnlineUser.add(lblRegisterPW);
+		
+		lblRegisterNickname = new JLabel("NICKNAME");
+		lblRegisterNickname.setBounds(25, 95, 81, 15);
+		pnlRegisterOnlineUser.add(lblRegisterNickname);
+		
+		lblRegisterEmail = new JLabel("E - MAIL");
+		lblRegisterEmail.setBounds(25, 120, 81, 15);
+		pnlRegisterOnlineUser.add(lblRegisterEmail);
+		
+		tfRegisterID = new JTextField();
+		tfRegisterID.setBounds(114, 42, 106, 21);
+		pnlRegisterOnlineUser.add(tfRegisterID);
+		tfRegisterID.setColumns(10);
+		
+		tfRegisterPW = new JTextField();
+		tfRegisterPW.setBounds(114, 67, 106, 21);
+		pnlRegisterOnlineUser.add(tfRegisterPW);
+		tfRegisterPW.setColumns(10);
+		
+		tfRegisterNickname = new JTextField();
+		tfRegisterNickname.setBounds(114, 92, 106, 21);
+		pnlRegisterOnlineUser.add(tfRegisterNickname);
+		tfRegisterNickname.setColumns(10);
+		
+		tfRegisterEmail = new JTextField();
+		tfRegisterEmail.setBounds(114, 117, 106, 21);
+		pnlRegisterOnlineUser.add(tfRegisterEmail);
+		tfRegisterEmail.setColumns(10);
+		
+		chckbxAcceptSharing = new JCheckBox(" \uC77C\uC815\uC744 \uACF5\uC720\uD569\uB2C8\uB2E4");
+		chckbxAcceptSharing.setBackground(new Color(255, 255, 102));
+		chckbxAcceptSharing.setSelected(true);
+		chckbxAcceptSharing.setBounds(35, 144, 171, 23);
+		pnlRegisterOnlineUser.add(chckbxAcceptSharing);
+		
+		btnRegister = new JButton("\uD574\uB2F9 \uC815\uBCF4\uB85C \uAC00\uC785");
+		btnRegister.setBackground(new Color(255, 255, 153));
+		btnRegister.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String regex = "^[a-zA-Z]{1}[a-zA-Z0-9_]{4,11}$";
+				if(!tfRegisterID.getText().matches(regex)){
+					JOptionPane.showMessageDialog(null, "시작은 영문으로만, '_'를 제외한 특수문자 안되며 영문, 숫자, '_'으로만 이루어진 5자 이상 12자 이하", "Error!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if(tfRegisterNickname.getText().length()<4 || tfRegisterNickname.getText().length()>9){
+					JOptionPane.showMessageDialog(null, "닉네임은 4자 이상 8자 이하", "Error!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				regex = "^[_a-zA-Z0-9-\\.]+@[\\.a-zA-Z0-9-]+\\.[a-zA-Z]+$";
+				if(!tfRegisterEmail.getText().matches(regex)){
+					JOptionPane.showMessageDialog(null, "이메일 형식에 맞지 않습니다.", "Error!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				int acceptSSC=0;
+				if(chckbxAcceptSharing.isSelected())
+					acceptSSC=1;
+				if(ClientManager.connect(new CarrierFromClient(tfRegisterID.getText(), tfRegisterPW.getText(), tfRegisterNickname.getText(), acceptSSC, tfRegisterEmail.getText()))){
+					Main.openframeHome();
+					frameManager.dispose();
+				}
+			}
+		});
+		btnRegister.setBounds(80, 173, 152, 42);
+		pnlRegisterOnlineUser.add(btnRegister);
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		pnlChooseOfflineUser = new JPanel();
+		pnlChooseOfflineUser.setBackground(new Color(255, 255, 102));
+		pnlChooseOfflineUser.setBounds(0, 0, 244, 262);
+		pnlChooseOfflineUser.setLayout(null);
+		frameManager.getContentPane().add(pnlChooseOfflineUser);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(22, 25, 196, 138);
+		pnlChooseOfflineUser.add(scrollPane);
+		list = new JList<Object>(DataManager.returnUserArray());
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane.setViewportView(list);
+		
+		btnChoiceUser = new JButton("해당 유저로 동기화");
+		btnChoiceUser.setBackground(new Color(255, 255, 153));
+		btnChoiceUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lblLoading.setVisible(true);
+				DataManager.user=(String)list.getSelectedValue();
+
+				
+				Main.openframeHome();
+				frameManager.dispose();
+			}
+		});
+		btnChoiceUser.setBounds(22, 174, 196, 30);
+		pnlChooseOfflineUser.add(btnChoiceUser);
+		
+		btnframeAddUser = new JButton("유저 추가");
+		btnframeAddUser.setBackground(new Color(255, 255, 153));
+		btnframeAddUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlChooseOfflineUser.setVisible(false);
+				
+				pnlAddOfflineUser.setVisible(true);
+			}
+		});
+		btnframeAddUser.setBounds(22, 214, 90, 30);
+		pnlChooseOfflineUser.add(btnframeAddUser);
+		
+		btnDeleteUser = new JButton("유저 삭제");
+		btnDeleteUser.setBackground(new Color(255, 255, 153));
+		btnDeleteUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DataManager.deleteUser((String)list.getSelectedValue());
+				
+				list = new JList<Object>(DataManager.returnUserArray());
+				scrollPane.setViewportView(list);
+			}
+		});
+		
+		btnDeleteUser.setBounds(128, 214, 90, 30);
+		pnlChooseOfflineUser.add(btnDeleteUser);
+		
+		loading=DataManager.loadimage("loading", "gif");
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		pnlAddOfflineUser = new JPanel();
+		pnlAddOfflineUser.setBackground(new Color(255, 255, 102));
+		pnlAddOfflineUser.setBounds(0, 0, 244, 262);
+		pnlAddOfflineUser.setLayout(null);
+		frameManager.getContentPane().add(pnlAddOfflineUser);
+		
+		username = new JTextField();
+		username.setBounds(94, 18, 136, 21);
+		username.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		username.setText("");
+        		username.setEditable(true);
+        	}
+        });
+		pnlAddOfflineUser.add(username);
+		username.setColumns(10);
+		
+		lblUserName = new JLabel("User Name");
+		lblUserName.setBounds(12, 21, 64, 15);
+		pnlAddOfflineUser.add(lblUserName);
+		
+		btnMakeUser = new JButton("유저 생성 [본 PC내]");
+		btnMakeUser.setBackground(new Color(255, 255, 153));
+		btnMakeUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String userlist[]=(DataManager.returnUserArray());
+				if(username.getText().length()<3){
+					username.setText("※3글자 미만!");
+					username.setEditable(false);
+					return ;
+				}
+				for(int i=0; i<userlist.length; i++)
+					if(userlist[i].matches(username.getText())==true){
+						username.setText("※유저 중복됨!");
+						username.setEditable(false);
+						return ;
+					}
+				if(username.getText()=="※3글자 미만!"||username.getText()=="※유저 중복됨!")
+					return ;
+				
+				DataManager.makeUserDirectory(username.getText());
+				username.setText("");
+				
+				list = new JList<Object>(DataManager.returnUserArray());
+				scrollPane.setViewportView(list);
+				
+				pnlAddOfflineUser.setVisible(false);
+				pnlChooseOfflineUser.setVisible(true);
+			}
+		});
+		btnMakeUser.setBounds(12, 49, 218, 60);
+		pnlAddOfflineUser.add(btnMakeUser);
+		
+		lblexplanation1 = new JLabel("\uC628\uB77C\uC778 \uACC4\uC815\uC740 \uB2E4\uB978\uD68C\uC6D0\uC774 \uC62C\uB9B0");
+		lblexplanation1.setBounds(12, 145, 224, 15);
+		pnlAddOfflineUser.add(lblexplanation1);
+		
+		lblexplanation2 = new JLabel("\uC77C\uC815\uC744 \uAD6C\uB3C5 \uAC00\uB2A5\uD558\uBA70 \uC790\uC2E0\uC758");
+		lblexplanation2.setBounds(12, 161, 224, 15);
+		pnlAddOfflineUser.add(lblexplanation2);
+		
+		lblexplanation3 = new JLabel("\uC77C\uC815\uC744 \uC11C\uBC84\uC5D0 \uBCF4\uAD00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+		lblexplanation3.setBounds(12, 177, 224, 15);
+		pnlAddOfflineUser.add(lblexplanation3);
+		
+		lblexplanation4 = new JLabel("Android\uAE30\uAE30\uC5D0\uC11C \uC5F4\uB78C\uB3C4 \uAC00\uB2A5\uD569\uB2C8\uB2E4");
+		lblexplanation4.setBounds(12, 193, 224, 15);
+		pnlAddOfflineUser.add(lblexplanation4);
+		
+		btnRegisterFromOff = new JButton("지금 계정을 만들겠습니다.");
+		btnRegisterFromOff.setBackground(new Color(255, 255, 153));
+		btnRegisterFromOff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnlAddOfflineUser.setVisible(false);
+				pnlRegisterOnlineUser.setVisible(true);
+			}
+		});
+		btnRegisterFromOff.setBounds(12, 211, 218, 23);
+		pnlAddOfflineUser.add(btnRegisterFromOff);
+		
+	}
+}

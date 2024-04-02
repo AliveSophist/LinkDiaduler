@@ -1,0 +1,61 @@
+package com.thesophist.window.macro;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import java.awt.CardLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class Frame extends JFrame {
+	
+
+	private static JPanel contentPane;
+	private static CardLayout cards=new CardLayout();
+	private JPanelAddAction pnlAddAction;
+	private JPanelHome pnlHome;
+
+
+	public Frame() {
+		addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				System.out.print( "KEY TYPED: "+e);
+		      }
+
+		      public void keyPressed(KeyEvent e) {
+		    	  System.out.print("KEY PRESSED: "+e);
+		      }
+
+		      public void keyReleased(KeyEvent e) {
+		    	  System.out.print("KEY RELEASED: "+e);
+		      }
+//			public void keyPressed(KeyEvent arg0) {
+//				if(arg0.getKeyCode()==KeyEvent.VK_A){
+//					getCursorPoint();
+//					ControlRobot.packMouseEvent("move",p.x*10000+p.y);
+//					System.out.print(p.x*10000+p.y);
+//				}
+//			}
+		});
+		
+		setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 420, 500);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(cards);
+		
+		pnlHome = new JPanelHome();
+		contentPane.add(pnlHome, "home");
+		
+		pnlAddAction = new JPanelAddAction();
+		contentPane.add(pnlAddAction, "addaction");
+	}
+	public static void nextPanel() {
+		cards.next(contentPane);
+    }
+	public static void previousPanel() {
+		cards.previous(contentPane);
+    }
+}

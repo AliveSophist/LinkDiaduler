@@ -1,0 +1,764 @@
+package com.linkdiaduler;
+
+import java.sql.*;
+import java.util.Calendar;
+import java.util.Random;
+import java.util.StringTokenizer;
+
+public class SQLWords {
+	public static String JDBC_DRIVER = "";
+	public static String DB_URL_createDB = "";
+	public static String DB_URL = "";
+	public static String USER = "";
+	public static String PASS = "";
+	
+	public static void createDB(){//linkdiaduler 데이터 베이스 제작
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL_createDB, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "CREATE DATABASE linkdiaduler";
+			stmt.executeUpdate(sql);
+			
+			System.out.println("linkdiaduler Database created successfully...");
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					stmt.close();
+			}catch(SQLException se2){
+			}// nothing we can do
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end createdb
+	public static void createAccountTable() {//데이터베이스 제작후 즉시 이행
+		//계정테이블 생성
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "create table accounts( " +
+					"memberid varchar(20) not null primary key," + 
+					"memberpw varchar(20) not null," + 
+					"nickname varchar(20) not null," + 
+					"registerip varchar(20) not null," + 
+					"serialcode varchar(16) not null," + 
+					"sscaccept BOOL not null," +
+					"ssclist text," +
+					"email varchar(80) not null)"; 
+			stmt.executeUpdate(sql);
+			
+			System.out.println("Account table created successfully...");
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end createtable
+
+	public static void createTestTable(){//계쩡테이블 생성후 즉시 이행
+		//유저생성시 마다 필요한 원본테이블(계정테이블) 생성
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sqlCreate = "create table temp("+
+					"dates int unsigned not null primary key," +
+					"texts text," + 
+					"images text," + 
+					"imagenum tinyint) ";
+			stmt.executeUpdate(sqlCreate);
+			String sqlInsert = null;
+			DateManager.warpDate(1989, 12, 31);
+			while(DateManager.getOriginal().get(Calendar.YEAR)!=2051){
+				sqlInsert = "INSERT INTO temp (dates, texts, images, imagenum)" +
+						"VALUES ("+DateManager.toString(DateManager.getOriginal(), 5)+", null, null, 0)";
+				stmt.executeUpdate(sqlInsert);
+				DateManager.addDate(DateManager.getOriginal(), 1);
+			}
+			
+			System.out.println("temp(forClone) table created successfully...");
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end insert
+
+	public static void createUserTable(String serialcode) {
+		//유저테이블 생성. 가입시.
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sqlCreate = "create table "+serialcode+"("+
+					"dates int unsigned not null primary key," +
+					"texts text," + 
+					"images text," + 
+					"imagenum tinyint) " +
+					"AS SELECT * FROM temp WHERE dates>0";//모든요소를 갖다붙여
+			stmt.executeUpdate(sqlCreate);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end createtable
+	
+	public static void insertUserAccount(String memberid, String memberpw, String nickname, String registerip, String serialcode, int sscaccept, String email) {
+		//유저테이블 생성후 계정테이블에 컬럼생성. 가입시.
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sqlInsert = null;
+			sqlInsert = "INSERT INTO accounts (memberid, memberpw, nickname, registerip, serialcode, sscaccept, ssclist, email)" +
+					"VALUES ('"+memberid+"', '"+memberpw+"', '"+nickname+"', '"+registerip+"', '"+serialcode+"', "+sscaccept+", null,'"+email+"')";
+			stmt.executeUpdate(sqlInsert);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end insert
+
+	public static boolean returnTableExists(String tablename){
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			DatabaseMetaData metadata = conn.getMetaData();
+			ResultSet resultSet;
+			
+			resultSet = metadata.getTables(null, null, tablename, null);
+			if(resultSet.next())
+				// Table exists
+				return true;
+			else
+				return false;
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}
+		return false;
+	}
+	public static boolean returnColumnExists(String tablename, String columnname) throws SQLException{
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			DatabaseMetaData metadata = conn.getMetaData();
+			ResultSet resultSet;
+
+			resultSet = metadata.getColumns(null, null, tablename, columnname);
+			if(resultSet.next())
+				// Column exists
+				return true;
+			else
+				return false;
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}
+	return false;
+	}
+	
+	public static int returnRegisterCounts(String registerip){
+		Connection conn = null;
+		Statement stmt = null;
+		int count = 0;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT * FROM accounts WHERE registerip="+registerip;
+			ResultSet rs = stmt.executeQuery(sql);
+
+			while(rs.next()){
+				count++;
+			}
+			rs.close();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return count;
+	}//end select
+	public static boolean returnIDOverlap(String memberid){
+		Connection conn = null;
+		Statement stmt = null;
+		boolean overlap = false;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT * FROM accounts WHERE memberid LIKE '%"+memberid+"%'";
+			ResultSet rs = stmt.executeQuery(sql);
+
+			while(rs.next()){
+				overlap=true;
+			}
+			rs.close();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return overlap;
+	}//end select
+	public static boolean returnNicknameOverlap(String nickname){
+		Connection conn = null;
+		Statement stmt = null;
+		boolean overlap = false;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT * FROM accounts WHERE nickname LIKE '%"+nickname+"%'";
+			ResultSet rs = stmt.executeQuery(sql);
+
+			while(rs.next()){
+				overlap=true;
+			}
+			rs.close();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return overlap;
+	}//end select
+	public static int returnIPOverlapnum(String memberip){
+		Connection conn = null;
+		Statement stmt = null;
+		int i=0;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT * FROM accounts WHERE registerip='"+memberip+"'";
+			ResultSet rs = stmt.executeQuery(sql);
+
+			while(rs.next()){
+				i++;
+			}
+			rs.close();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return i;
+	}//end select
+	public static void updateUserTexts(String serialCode, String kindindex, int repeatnum, String fixindex){
+		Connection conn = null;
+		Statement stmt = null;
+		String[] contents=new String[repeatnum];
+		String[] accessDates=new String[repeatnum];
+		String[] fixindexs=new String[repeatnum];
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			int i=0;
+			
+			if(fixindex.contains("|")){
+				StringTokenizer st=new StringTokenizer(fixindex, "||");
+
+				while(i<repeatnum){
+					contents[i]=st.nextToken();
+					i++;
+				}
+			}
+			else{
+				contents[0]=fixindex;
+			}
+			i=0;
+			while(i<repeatnum){
+				accessDates[i]=contents[i].substring(0, contents[i].indexOf("."));
+				if(contents[i].contains(" "))//공백은 구분자로서 내용의 유무를 판단함
+					fixindexs[i]=contents[i].substring(contents[i].indexOf(" "));
+				else
+					fixindexs[i]="";
+				i++;
+			}
+			i=0;
+			while(i<repeatnum){
+				String sql = "UPDATE "+serialCode+
+						" SET "+kindindex+"='"+fixindexs[i]+"' WHERE dates="+accessDates[i];
+				stmt.executeUpdate(sql);
+				i++;
+			}
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end update
+	public static void updateUserImages(String serialCode, int repeatnum, String fixindex){
+		Connection conn = null;
+		Statement stmt = null;
+		String[] contents=new String[repeatnum];
+		String[] accessDates=new String[repeatnum];
+		String[] fixindexs=new String[repeatnum];
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			int i=0;
+			
+			if(fixindex.contains("|")){
+				StringTokenizer st=new StringTokenizer(fixindex, "||");
+
+				while(i<repeatnum){
+					contents[i]=st.nextToken();
+					i++;
+				}
+			}
+			else{
+				contents[0]=fixindex;
+			}
+			i=0;
+			while(i<repeatnum){
+				accessDates[i]=contents[i].substring(0, contents[i].indexOf("."));
+				if(contents[i].contains(" "))//공백은 구분자로서 내용의 유무를 판단함
+					fixindexs[i]=contents[i].substring(contents[i].indexOf(" "));
+				else
+					fixindexs[i]="";
+				i++;
+			}
+			i=0;
+			while(i<repeatnum){
+				String sql = "UPDATE "+serialCode+
+						" SET images='"+fixindexs[i]+"' WHERE dates="+accessDates[i];
+				stmt.executeUpdate(sql);
+				i++;
+			}
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end update
+	public static void updateSSCList(String serialCode, String SSClist){
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sqlupdate = "UPDATE accounts"+
+					" SET ssclist='"+SSClist+"' WHERE serialcode='"+serialCode+"'";
+			stmt.executeUpdate(sqlupdate);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end update
+	public static void updateUserContents(String serialCode, String kindindex, String fixindex, int accessDate){
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "UPDATE "+serialCode+
+					" SET "+kindindex+"='"+fixindex+"' WHERE dates="+accessDate;
+			stmt.executeUpdate(sql);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}//end update
+	public static String returnUserWeekIndex(String serialCode, String kindindex, int accessDate) {
+		Connection conn = null;
+		Statement stmt = null;
+		String index = ".";
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT "+kindindex+" FROM "+serialCode+
+					" WHERE dates>="+accessDate;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			for(int i=0; i<7; i++){
+				if(rs.next())
+					index+=(rs.getString(kindindex)+"||.");
+				else
+					index+=".||";
+			}
+				
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return index;
+	}//end select
+	public static String returnUserWeekImageIndex(String serialCode, int accessDate) {
+		Connection conn = null;
+		Statement stmt = null;
+		String index = ".";
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT images, imagenum FROM "+serialCode+
+					" WHERE dates>="+accessDate;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			for(int i=0; i<7; i++){
+				rs.next();
+				if(rs.getInt("imagenum")==0)
+					index+=".||";
+				else
+					index+=(rs.getString("images")+"||.");
+			}
+				
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return index;
+	}//end select
+	public static boolean checkUserInfo(String checkInfo, String needInfo, String qualification, String answer) {//체크하는 정보와 필요한 정보가 같은지 조건식으로 확인.
+		Connection conn = null;
+		Statement stmt = null;
+		boolean c=false;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT "+checkInfo+" FROM accounts WHERE "+qualification+"='"+answer+"'";
+			ResultSet rs = stmt.executeQuery(sql);
+			if(!rs.next()){
+				 return c;
+			 }
+			if(qualification.equals("nickname")){
+				c=(rs.getInt(checkInfo)==Integer.parseInt(needInfo));
+			}
+			c=(rs.getString(checkInfo).equals(needInfo));
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return c;
+	}//end select
+	public static String returnUserInfo(String needInfo, String qualification, String answer) {//체크하는 정보와 필요한 정보가 같은지 조건식으로 확인.
+		Connection conn = null;
+		Statement stmt = null;
+		String info=null;
+		try{
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT "+needInfo+" FROM accounts WHERE "+qualification+"='"+answer+"'";
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.next();
+			info=rs.getString(needInfo);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					conn.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return info;
+	}//end select
+	
+	
+
+	public static String returnSerialCode(){//이미지 이름 랜덤발급
+		while(true){
+			Random random = new Random();
+			char code1=(char)(random.nextInt(25)+65);
+			char code2=(char)(random.nextInt(25)+65);
+			String code3=String.format("%04d",random.nextInt(10000));
+			StringBuffer formatedCode=new StringBuffer("ld");
+			formatedCode.append(DateManager.toString(DateManager.getOriginal(), 5));
+			formatedCode.append(code1+""+code2+""+code3);
+			
+			//테이블에 같은 이미지 이름이 없을 경우 반환 루프 탈출
+			if(!returnTableExists(formatedCode.toString()))
+				return formatedCode.toString();
+		}
+	}
+}

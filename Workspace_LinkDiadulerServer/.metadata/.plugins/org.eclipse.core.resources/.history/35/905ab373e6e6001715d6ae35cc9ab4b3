@@ -1,0 +1,186 @@
+package com.linkdiaduler;
+
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.util.*;
+
+ 
+
+public class NioEchoServer
+{
+	private int port = 9090;
+	private ServerSocketChannel serverSocketChannel = null;
+	private Selector selector = null;
+	private Charset charset = null;
+	
+	private Vector<SocketChannel> v = null;
+
+
+	public NioEchoServer()
+	{
+		try
+		{
+			charset = Charset.forName("UTF-8");
+			selector = Selector.open();
+			serverSocketChannel = ServerSocketChannel.open(); //채널오픈
+			serverSocketChannel.configureBlocking(false); //논블로킹
+			serverSocketChannel.socket().bind(new InetSocketAddress(port));	//서버소켓(채널) 아이피설정(포트오픈)
+			serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT); //??
+   
+			v = new Vector<SocketChannel>();
+		}
+		catch(Exception e)
+		{
+			try
+			{
+				if(serverSocketChannel != null)
+				{
+					serverSocketChannel.close();
+					serverSocketChannel = null;
+				}
+				if(selector != null)
+				{
+					selector.close();
+					selector = null;
+				}
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+ 
+	public void start()
+	{
+		while(true)
+		{
+			try
+			{
+				selector.select();
+    
+				Iterator<?> iter = selector.selectedKeys().iterator();
+				while(iter.hasNext())
+				{
+					SelectionKey key = (SelectionKey)iter.next();
+     
+					if(key.isAcceptable())
+					{
+						// accept 처리
+						clientAccept(key);
+					}
+					else if(key.isReadable())
+					{
+						// read 처리
+						readMessage(key);
+					}
+					
+					iter.remove();
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+ 
+ private void clientAccept(SelectionKey key)
+ {
+  SocketChannel sc = null;
+  ServerSocketChannel ssc = null;
+  
+  try
+  {
+   ssc = (ServerSocketChannel)key.channel();
+   sc = ssc.accept();
+   sc.configureBlocking(false);
+   sc.register(selector, SelectionKey.OP_READ);
+   
+   v.add(sc);
+   
+   System.out.println(sc.toString() + " 클라이언트가 접속을 했습니다.");
+  }
+  catch(Exception e)
+  {
+   if(sc != null)
+   {
+    try
+    {
+     sc.close();
+     sc = null;
+    }
+    catch(Exception ex)
+    {
+     
+    }
+   }
+   e.printStackTrace();
+  }
+ }
+ 
+ private void readMessage(SelectionKey key)
+ {
+  ByteBuffer buffer = null;
+  SocketChannel sc = null;
+  
+  try
+  {
+   buffer = ByteBuffer.allocateDirect(1024);
+   sc = (SocketChannel)key.channel();
+   
+   sc.read(buffer);
+   
+   // 모든 클라이언트에게 메시지 전송
+   allClientSendMessage(buffer);
+   System.out.println(charset.decode(buffer).toString());
+   
+   buffer.clear();
+   buffer = null;
+  }
+  catch(Exception e)
+  {
+   try
+   {
+    v.remove(sc);
+    System.out.println(sc.toString() + " 클라이언트가 접속을 종료했습니다.");
+    
+    sc.close();
+    sc = null;
+   }
+   catch(Exception ex)
+   {
+    
+   }
+  }
+ }
+ 
+ private void allClientSendMessage(ByteBuffer buffer)
+ {
+  try
+  {
+   buffer.flip();
+   
+   Iterator<SocketChannel> iter = v.iterator();
+   
+   while(iter.hasNext())
+   {
+    SocketChannel sc = (SocketChannel)iter.next();
+    sc.write(buffer);
+    buffer.rewind();
+   }
+  }
+  catch(Exception e)
+  {
+   e.printStackTrace();
+  }
+ }
+
+ public static void main(String[] args)
+ {
+  new NioEchoServer().start();
+ }
+}

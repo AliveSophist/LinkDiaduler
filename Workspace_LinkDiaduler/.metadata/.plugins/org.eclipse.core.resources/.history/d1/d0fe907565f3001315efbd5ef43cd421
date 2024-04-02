@@ -1,0 +1,1661 @@
+package com.linkdiaduler;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JEditorPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+
+import java.awt.FlowLayout;
+import java.awt.Desktop;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Button;
+import java.awt.GridLayout;
+import java.awt.RenderingHints;
+import java.awt.Font;
+import java.awt.ScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.Color;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.image.BufferedImage;
+
+import javax.imageio.ImageIO;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+
+public class LinkDiaduler {
+
+	public JFrame frameHome;
+	//Control
+	private JPanel pnlControl, pnlControlTOP, pnlControlBOTTOM, pnlControlCENTER;
+	private JButton btnLastYear, btnNextYear, btnLastMonth, btnNextMonth, btnLastWeek, btnNextWeek;
+	private Button btnWarpDate;
+	//Manager
+	private JPanel pnlManager;
+	private JToggleButton tglbtnEdit;
+	private JButton btnMacro, btnSettings, btnSSC;
+		//SSCManager
+		private JPanel pnlSSCManager;
+		private JScrollPane spSSC;
+		private JList listSSC;
+		private JButton btnOWN;
+	//ShowDate
+	private JPanel pnlShowDate;
+	private JToggleButton lblSunDate, lblMonDate, lblTueDate, lblWedDate, lblThuDate, lblFriDate, lblSatDate;
+	//ShowContents
+		//Default
+		private JPanel pnlShowContents, pnlShowContentsDefault, pnlSunContentsDefault, pnlSunImageDefault, pnlSunImageControl, pnlMonContentsDefault, pnlMonImageDefault, pnlMonImageControl, pnlTueContentsDefault, pnlTueImageDefault, pnlTueImageControl, pnlWedContentsDefault, pnlWedImageDefault, pnlWedImageControl, pnlThuContentsDefault, pnlThuImageDefault, pnlThuImageControl, pnlFriContentsDefault, pnlFriImageDefault, pnlFriImageControl, pnlSatContentsDefault, pnlSatImageDefault, pnlSatImageControl;
+		private JButton btnSunImageViewDefault, btnSunImageAdd, btnSunImageDel, btnSunImagePass, btnSunImageReturn, btnMonImageViewDefault, btnMonImageAdd, btnMonImageDel, btnMonImagePass, btnMonImageReturn, btnTueImageViewDefault, btnTueImageAdd, btnTueImageDel, btnTueImagePass, btnTueImageReturn, btnWedImageViewDefault, btnWedImageAdd, btnWedImageDel, btnWedImagePass, btnWedImageReturn, btnThuImageViewDefault, btnThuImageAdd, btnThuImageDel, btnThuImagePass, btnThuImageReturn, btnFriImageViewDefault, btnFriImageAdd, btnFriImageDel, btnFriImagePass, btnFriImageReturn, btnSatImageViewDefault, btnSatImageAdd, btnSatImageDel, btnSatImagePass, btnSatImageReturn;
+		private JScrollPane scSunContentsDefault, scMonContentsDefault, scTueContentsDefault, scWedContentsDefault, scThuContentsDefault, scFriContentsDefault, scSatContentsDefault;
+		private JEditorPane epSunText, epMonText, epTueText, epWedText, epThuText, epFriText, epSatText;
+		//ImageMode
+		private JPanel pnlShowContentsImageMode, pnlImageModeControl, pnlImageModeControl2;
+		private JButton btnImageModeImage1, btnImageModeImage2, btnImageModeImage3, btnImageModeImage4, btnImageModeImage5, btnImageModeImage6, btnImageModeImage7, btnImageModeImage8, btnAddImage, btnLast8Images, btnNext8Images;
+
+	boolean isEditing=false;//텍스트 에디트 중일경우 이동불가.
+	boolean imagemode=false;//이미지 모드일경우 이동불가.
+	int imagenum[]=new int[7];
+	int dayofweekImageMode[]=new int[7];
+	
+	
+	public LinkDiaduler() {
+		initialize();
+	}
+
+	private void initialize() {
+		
+		frameHome = new JFrame();
+		frameHome.setTitle("LinkDiaduler");
+		frameHome.setBounds(400, 200, 450, 777);
+		frameHome.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GridBagLayout gBag = new GridBagLayout();
+		gBag.rowWeights = new double[]{0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+		gBag.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+		frameHome.getContentPane().setLayout(gBag);
+		frameHome.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				int notches = e.getWheelRotation();
+		        while (notches > 0) {
+		        	if(isEditing)
+						return;
+		        	if(imagemode)
+						return;
+		        	DateManager.addWeek(1);
+					weekContentsChanger();
+		            notches--;
+		        }
+		        while (notches < 0) {
+		        	if(isEditing)
+						return;
+		        	if(imagemode)
+						return;
+		        	DateManager.addWeek(-1);
+					weekContentsChanger();
+		            notches++;
+		        }
+			}
+		});
+		
+		
+		//Control 패널 Start 
+		pnlControl = new JPanel();
+		GridBagConstraints gbc_pnlControl = new GridBagConstraints();
+		gbc_pnlControl.gridwidth = 2;
+		gbc_pnlControl.insets = new Insets(10, 10, 5, 0); // 여백설정; 위 왼쪽 아래 오른쪽
+		gbc_pnlControl.fill = GridBagConstraints.BOTH;
+		gbc_pnlControl.gridx = 0;
+		gbc_pnlControl.gridy = 0;
+		frameHome.getContentPane().add(pnlControl, gbc_pnlControl);
+		pnlControl.setLayout(new BorderLayout(0, 0));
+		
+			pnlControlTOP = new JPanel();
+			pnlControl.add(pnlControlTOP, BorderLayout.NORTH);
+			GridBagLayout gbl_pnlControlTOP = new GridBagLayout();
+			gbl_pnlControlTOP.columnWeights = new double[]{1.0, 1.0};
+			gbl_pnlControlTOP.rowWeights = new double[]{0.0};
+			pnlControlTOP.setLayout(gbl_pnlControlTOP);
+			
+			btnLastYear = new JButton("Last Year");
+			btnLastYear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//작년 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addYear(-1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnLastYear = new GridBagConstraints();
+			gbc_btnLastYear.fill = GridBagConstraints.BOTH;
+			gbc_btnLastYear.gridx = 0;
+			gbc_btnLastYear.gridy = 0;
+			pnlControlTOP.add(btnLastYear, gbc_btnLastYear);
+			
+			btnNextYear = new JButton("Next Year");
+			btnNextYear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//내년 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addYear(1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnNextYear = new GridBagConstraints();
+			gbc_btnNextYear.fill = GridBagConstraints.BOTH;
+			gbc_btnNextYear.gridx = 1;
+			gbc_btnNextYear.gridy = 0;
+			pnlControlTOP.add(btnNextYear, gbc_btnNextYear);
+			
+			pnlControlBOTTOM = new JPanel();
+			pnlControl.add(pnlControlBOTTOM, BorderLayout.SOUTH);
+			GridBagLayout gbl_pnlControlBOTTOM = new GridBagLayout();
+			gbl_pnlControlBOTTOM.columnWeights = new double[]{1.0, 1.0};
+			gbl_pnlControlBOTTOM.rowWeights = new double[]{0.0};
+			pnlControlBOTTOM.setLayout(gbl_pnlControlBOTTOM);
+			
+			btnLastMonth = new JButton("Last Month");
+			btnLastMonth.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//저번달 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addMonth(-1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnLastMonth = new GridBagConstraints();
+			gbc_btnLastMonth.fill = GridBagConstraints.BOTH;
+			gbc_btnLastMonth.gridx = 0;
+			gbc_btnLastMonth.gridy = 0;
+			pnlControlBOTTOM.add(btnLastMonth, gbc_btnLastMonth);
+			
+			btnNextMonth = new JButton("Next Month");
+			btnNextMonth.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//다음달 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addMonth(1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnNextMonth = new GridBagConstraints();
+			gbc_btnNextMonth.fill = GridBagConstraints.BOTH;
+			gbc_btnNextMonth.gridx = 1;
+			gbc_btnNextMonth.gridy = 0;
+			pnlControlBOTTOM.add(btnNextMonth, gbc_btnNextMonth);
+			
+			pnlControlCENTER = new JPanel();
+			pnlControl.add(pnlControlCENTER, BorderLayout.CENTER);
+			GridBagLayout gbl_pnlControlCENTER = new GridBagLayout();
+			gbl_pnlControlCENTER.columnWidths = new int[]{0, 100, 0};
+			gbl_pnlControlCENTER.columnWeights = new double[]{1.0, 1.0, 1.0};
+			gbl_pnlControlCENTER.rowWeights = new double[]{0.0};
+			pnlControlCENTER.setLayout(gbl_pnlControlCENTER);
+			
+			btnLastWeek = new JButton("◀");
+			btnLastWeek.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//저번주 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addWeek(-1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnLastWeek = new GridBagConstraints();
+			gbc_btnLastWeek.fill = GridBagConstraints.BOTH;
+			gbc_btnLastWeek.gridx = 0;
+			gbc_btnLastWeek.gridy = 0;
+			pnlControlCENTER.add(btnLastWeek, gbc_btnLastWeek);
+			
+			btnWarpDate = new Button("Today's Date");
+			btnWarpDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				}
+			});
+			GridBagConstraints gbc_btnWarpDate = new GridBagConstraints();
+			gbc_btnWarpDate.fill = GridBagConstraints.BOTH;
+			gbc_btnWarpDate.gridx = 1;
+			gbc_btnWarpDate.gridy = 0;
+			pnlControlCENTER.add(btnWarpDate, gbc_btnWarpDate);
+			
+			btnNextWeek = new JButton("▶");
+			btnNextWeek.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//다음주 대입
+					if(isEditing)
+						return;
+					if(imagemode)
+						return;
+					DateManager.addWeek(1);
+					weekContentsChanger();
+				}
+			});
+			GridBagConstraints gbc_btnNextWeek = new GridBagConstraints();
+			gbc_btnNextWeek.fill = GridBagConstraints.BOTH;
+			gbc_btnNextWeek.gridx = 2;
+			gbc_btnNextWeek.gridy = 0;
+			pnlControlCENTER.add(btnNextWeek, gbc_btnNextWeek);
+		//Control 패널  End
+		
+		
+		
+		
+		
+		//Manager 패널 Start
+		pnlManager = new JPanel();
+		pnlManager.setLayout(null);
+		GridBagConstraints gbc_pnlManager = new GridBagConstraints();
+		gbc_pnlManager.insets = new Insets(10, 0, 5, 10);
+		gbc_pnlManager.fill = GridBagConstraints.BOTH;
+		gbc_pnlManager.gridx = 2;
+		gbc_pnlManager.gridy = 0;
+		gbc_pnlManager.gridwidth=12;
+		frameHome.getContentPane().add(pnlManager, gbc_pnlManager);
+		
+			tglbtnEdit = new JToggleButton("Edit");
+			tglbtnEdit.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if(e.getStateChange()==ItemEvent.SELECTED){//토글
+						tglbtnEdit.setText("Save");
+						epSunText.setEditable(true);
+						epMonText.setEditable(true);
+						epTueText.setEditable(true);
+						epWedText.setEditable(true);
+						epThuText.setEditable(true);
+						epFriText.setEditable(true);
+						epSatText.setEditable(true);
+						isEditing=(true);
+					}
+					else{//버튼 토글이 풀릴때
+						tglbtnEdit.setText("Edit");
+						epSunText.setEditable(false);
+						epMonText.setEditable(false);
+						epTueText.setEditable(false);
+						epWedText.setEditable(false);
+						epThuText.setEditable(false);
+						epFriText.setEditable(false);
+						epSatText.setEditable(false);
+						isEditing=(false);
+						DataManager.fixDecodedText(0,epSunText.getText());
+						DataManager.fixDecodedText(1,epMonText.getText());
+						DataManager.fixDecodedText(2,epTueText.getText());
+						DataManager.fixDecodedText(3,epWedText.getText());
+						DataManager.fixDecodedText(4,epThuText.getText());
+						DataManager.fixDecodedText(5,epFriText.getText());
+						DataManager.fixDecodedText(6,epSatText.getText());
+						DataManager.saveIndex('t');
+					}
+				}	
+			});
+			tglbtnEdit.setBounds(146, 60, 60, 23);
+			pnlManager.add(tglbtnEdit);
+			
+			btnMacro = new JButton("Macro");
+			btnMacro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeMacro();
+				}
+			});
+			btnMacro.setBounds(12, 60, 70, 23);
+			pnlManager.add(btnMacro);
+			
+			btnSettings = new JButton("Settings");
+			btnSettings.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				}
+			});
+			btnSettings.setBounds(12, 0, 85, 23);
+			pnlManager.add(btnSettings);
+			
+			btnSSC = new JButton("SSC");
+			btnSSC.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					pnlManager.setVisible(false);
+					pnlSSCManager.setVisible(true);
+				}
+			});
+			btnSSC.setBounds(146, 0, 60, 23);
+			pnlManager.add(btnSSC);
+		//Manager 패널  End
+		
+			
+			
+			
+			
+			//SSCManager 패널 Start
+			pnlSSCManager = new JPanel();
+			pnlSSCManager.setLayout(null);
+			GridBagConstraints gbc_pnlSSCManager = new GridBagConstraints();
+			gbc_pnlSSCManager.insets = new Insets(10, 0, 5, 10);
+			gbc_pnlSSCManager.fill = GridBagConstraints.BOTH;
+			gbc_pnlSSCManager.gridx = 2;
+			gbc_pnlSSCManager.gridy = 0;
+			gbc_pnlSSCManager.gridwidth=12;
+			frameHome.getContentPane().add(pnlSSCManager, gbc_pnlSSCManager);
+			pnlSSCManager.setVisible(false);
+			
+			btnOWN = new JButton("OWN");
+			btnOWN.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					pnlManager.setVisible(true);
+					pnlSSCManager.setVisible(false);
+				}
+			});
+			btnOWN.setBounds(143, 0, 60, 23);
+			pnlSSCManager.add(btnOWN);
+			
+			spSSC = new JScrollPane();
+			spSSC.setBounds(12, 0, 124, 69);
+			pnlSSCManager.add(spSSC);
+			listSSC = new JList<Object>(DataManager.returnUserArray());
+			listSSC.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			spSSC.setViewportView(listSSC);
+			//SSCManager 패널 End
+		
+			
+		
+		
+		
+		//ShowDate 패널 Start
+		pnlShowDate = new JPanel();
+		GridBagConstraints gbc_pnlShowDate = new GridBagConstraints();
+		gbc_pnlShowDate.insets = new Insets(0, 10, 10, 5);
+		gbc_pnlShowDate.fill = GridBagConstraints.BOTH;
+		gbc_pnlShowDate.gridx = 0;
+		gbc_pnlShowDate.gridy = 1;
+		gbc_pnlShowDate.gridheight=22;
+		frameHome.getContentPane().add(pnlShowDate, gbc_pnlShowDate);
+		GridBagLayout gbl_pnlShowDate = new GridBagLayout();
+		gbl_pnlShowDate.columnWidths = new int[]{70};
+		gbl_pnlShowDate.columnWeights = new double[]{1.0};
+		gbl_pnlShowDate.rowWeights = new double[]{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+		pnlShowDate.setLayout(gbl_pnlShowDate);
+		
+			lblSunDate = new JToggleButton("Sun Date");
+			lblSunDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblMonDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblSunDate.isSelected())
+						dayContentsModeChanger(0, true);
+					else
+						dayContentsModeChanger(0, false);
+				}
+			});
+			lblSunDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			lblSunDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			GridBagConstraints gbc_lblSunDate = new GridBagConstraints();
+			gbc_lblSunDate.fill = GridBagConstraints.BOTH;
+			gbc_lblSunDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblSunDate.gridx = 0;
+			gbc_lblSunDate.gridy = 0;
+			pnlShowDate.add(lblSunDate, gbc_lblSunDate);
+			
+			lblMonDate = new JToggleButton("Mon Date");
+			lblMonDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblMonDate.isSelected())
+						dayContentsModeChanger(1, true);
+					else
+						dayContentsModeChanger(1, false);
+				}
+			});
+			lblMonDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblMonDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblMonDate = new GridBagConstraints();
+			gbc_lblMonDate.fill = GridBagConstraints.BOTH;
+			gbc_lblMonDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblMonDate.gridx = 0;
+			gbc_lblMonDate.gridy = 1;
+			pnlShowDate.add(lblMonDate, gbc_lblMonDate);
+			
+			lblTueDate = new JToggleButton("Tue Date");
+			lblTueDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblMonDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblTueDate.isSelected())
+						dayContentsModeChanger(2, true);
+					else
+						dayContentsModeChanger(2, false);
+				}
+			});
+			lblTueDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblTueDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblTueDate = new GridBagConstraints();
+			gbc_lblTueDate.fill = GridBagConstraints.BOTH;
+			gbc_lblTueDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblTueDate.gridx = 0;
+			gbc_lblTueDate.gridy = 2;
+			pnlShowDate.add(lblTueDate, gbc_lblTueDate);
+			
+			lblWedDate = new JToggleButton("Wed Date");
+			lblWedDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblMonDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblWedDate.isSelected())
+						dayContentsModeChanger(3, true);
+					else
+						dayContentsModeChanger(3, false);
+				}
+			});
+			lblWedDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblWedDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblWedDate = new GridBagConstraints();
+			gbc_lblWedDate.fill = GridBagConstraints.BOTH;
+			gbc_lblWedDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblWedDate.gridx = 0;
+			gbc_lblWedDate.gridy = 3;
+			pnlShowDate.add(lblWedDate, gbc_lblWedDate);
+			
+			lblThuDate = new JToggleButton("Thu Date");
+			lblThuDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblMonDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblThuDate.isSelected())
+						dayContentsModeChanger(4, true);
+					else
+						dayContentsModeChanger(4, false);
+				}
+			});
+			lblThuDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblThuDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblThuDate = new GridBagConstraints();
+			gbc_lblThuDate.fill = GridBagConstraints.BOTH;
+			gbc_lblThuDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblThuDate.gridx = 0;
+			gbc_lblThuDate.gridy = 4;
+			pnlShowDate.add(lblThuDate, gbc_lblThuDate);
+			
+			lblFriDate = new JToggleButton("Fri Date");
+			lblFriDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblMonDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblSatDate.setSelected(false);
+					if(lblFriDate.isSelected())
+						dayContentsModeChanger(5, true);
+					else
+						dayContentsModeChanger(5, false);
+				}
+			});
+			lblFriDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblFriDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblFriDate = new GridBagConstraints();
+			gbc_lblFriDate.fill = GridBagConstraints.BOTH;
+			gbc_lblFriDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblFriDate.gridx = 0;
+			gbc_lblFriDate.gridy = 5;
+			pnlShowDate.add(lblFriDate, gbc_lblFriDate);
+			
+			lblSatDate = new JToggleButton("Sat Date");
+			lblSatDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lblSunDate.setSelected(false);
+					lblMonDate.setSelected(false);
+					lblTueDate.setSelected(false);
+					lblWedDate.setSelected(false);
+					lblThuDate.setSelected(false);
+					lblFriDate.setSelected(false);
+					if(lblSatDate.isSelected())
+						dayContentsModeChanger(6, true);
+					else
+						dayContentsModeChanger(6, false);
+				}
+			});
+			lblSatDate.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblSatDate.setHorizontalAlignment(SwingConstants.RIGHT);
+			GridBagConstraints gbc_lblSatDate = new GridBagConstraints();
+			gbc_lblSatDate.fill = GridBagConstraints.BOTH;
+			gbc_lblSatDate.insets = new Insets(0, 0, 0, 0);
+			gbc_lblSatDate.gridx = 0;
+			gbc_lblSatDate.gridy = 6;
+			pnlShowDate.add(lblSatDate, gbc_lblSatDate);
+		//ShowDate 패널 End
+		
+		
+		
+		
+		
+		//ShowContents 패널 Start
+		pnlShowContents = new JPanel();
+		GridBagConstraints gbc_pnlShowContents = new GridBagConstraints();
+		gbc_pnlShowContents.insets = new Insets(0, 0, 10, 10);
+		gbc_pnlShowContents.fill = GridBagConstraints.BOTH;
+		gbc_pnlShowContents.gridx = 1;
+		gbc_pnlShowContents.gridy = 1;
+		gbc_pnlShowContents.gridwidth=13;
+		gbc_pnlShowContents.gridheight=22;
+		frameHome.getContentPane().add(pnlShowContents, gbc_pnlShowContents);
+		pnlShowContents.setLayout(new CardLayout(0, 0));
+		
+		
+			//ShowContentsDefault 패널 Start
+			pnlShowContentsDefault = new JPanel();
+			pnlShowContents.add(pnlShowContentsDefault, "name_611415724343457");
+			GridBagLayout gbl_pnlShowContentsDefault = new GridBagLayout();
+			gbl_pnlShowContentsDefault.columnWeights = new double[]{1.0};
+			gbl_pnlShowContentsDefault.rowWeights = new double[]{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+			pnlShowContentsDefault.setLayout(gbl_pnlShowContentsDefault);
+			
+			pnlSunContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlSunContentsDefault = new GridBagConstraints();
+			gbc_pnlSunContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlSunContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlSunContentsDefault.gridx = 0;
+			gbc_pnlSunContentsDefault.gridy = 0;
+			pnlShowContentsDefault.add(pnlSunContentsDefault, gbc_pnlSunContentsDefault);
+			pnlSunContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scSunContentsDefault = new JScrollPane();
+			scSunContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlSunContentsDefault.add(scSunContentsDefault);
+			
+			epSunText = new JEditorPane();
+			epSunText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scSunContentsDefault.setViewportView(epSunText);
+			
+			pnlSunImageDefault = new JPanel();
+			scSunContentsDefault.setRowHeaderView(pnlSunImageDefault);
+			pnlSunImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnSunImageViewDefault = new JButton("");
+			btnSunImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[0][imagenum[0]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+					
+				}
+			});
+			btnSunImageViewDefault.setSize(120, 100);
+			btnSunImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnSunImageViewDefault.setForeground(Color.WHITE);
+			pnlSunImageDefault.add(btnSunImageViewDefault, BorderLayout.CENTER);
+			
+			pnlSunImageControl = new JPanel();
+			pnlSunImageDefault.add(pnlSunImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlSunImageControl = new GridBagLayout();
+			gbl_pnlSunImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlSunImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlSunImageControl.setLayout(gbl_pnlSunImageControl);
+			
+			btnSunImageAdd = new JButton("+");
+			btnSunImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("sunCal",5));
+				}
+			});
+			btnSunImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSunImageAdd = new GridBagConstraints();
+			gbc_btnSunImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnSunImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSunImageAdd.gridx = 0;
+			gbc_btnSunImageAdd.gridy = 0;
+			pnlSunImageControl.add(btnSunImageAdd, gbc_btnSunImageAdd);
+			
+			btnSunImageDel = new JButton("-");
+			btnSunImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[0]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[0][imagenum[0]], DataManager.dayofweekURL[0][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnSunImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSunImageDel = new GridBagConstraints();
+			gbc_btnSunImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnSunImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSunImageDel.gridx = 0;
+			gbc_btnSunImageDel.gridy = 1;
+			pnlSunImageControl.add(btnSunImageDel, gbc_btnSunImageDel);
+			
+			btnSunImagePass = new JButton("\u25B2");
+			btnSunImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(imagenum[0]-1 >= 0){
+						btnSunImageViewDefault.setIcon(dayImageChanger(0, false));
+						imagenum[0]--;
+					}
+				}
+			});
+			btnSunImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSunImagePass = new GridBagConstraints();
+			gbc_btnSunImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnSunImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSunImagePass.gridx = 0;
+			gbc_btnSunImagePass.gridy = 2;
+			pnlSunImageControl.add(btnSunImagePass, gbc_btnSunImagePass);
+			
+			btnSunImageReturn = new JButton("\u25BC");
+			btnSunImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(imagenum[0]+1 <= DataManager.dayofweekICnum[0]-1){
+						btnSunImageViewDefault.setIcon(dayImageChanger(0, true));
+						imagenum[0]++;
+					}
+				}
+			});
+			btnSunImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSunImageReturn = new GridBagConstraints();
+			gbc_btnSunImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnSunImageReturn.gridx = 0;
+			gbc_btnSunImageReturn.gridy = 3;
+			pnlSunImageControl.add(btnSunImageReturn, gbc_btnSunImageReturn);
+			
+			pnlMonContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlMonContentsDefault = new GridBagConstraints();
+			gbc_pnlMonContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlMonContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlMonContentsDefault.gridx = 0;
+			gbc_pnlMonContentsDefault.gridy = 1;
+			pnlShowContentsDefault.add(pnlMonContentsDefault, gbc_pnlMonContentsDefault);
+			pnlMonContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scMonContentsDefault = new JScrollPane();
+			scMonContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlMonContentsDefault.add(scMonContentsDefault);
+			
+			epMonText = new JEditorPane();
+			epMonText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scMonContentsDefault.setViewportView(epMonText);
+			
+			pnlMonImageDefault = new JPanel();
+			scMonContentsDefault.setRowHeaderView(pnlMonImageDefault);
+			pnlMonImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnMonImageViewDefault = new JButton("");
+			btnMonImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[1][imagenum[1]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnMonImageViewDefault.setSize(120, 100);
+			btnMonImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnMonImageViewDefault.setForeground(Color.WHITE);
+			pnlMonImageDefault.add(btnMonImageViewDefault, BorderLayout.CENTER);
+			
+			pnlMonImageControl = new JPanel();
+			pnlMonImageDefault.add(pnlMonImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlMonImageControl = new GridBagLayout();
+			gbl_pnlMonImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlMonImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlMonImageControl.setLayout(gbl_pnlMonImageControl);
+			
+			btnMonImageAdd = new JButton("+");
+			btnMonImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("monCal",5));
+					
+				}
+			});
+			btnMonImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnMonImageAdd = new GridBagConstraints();
+			gbc_btnMonImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnMonImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnMonImageAdd.gridx = 0;
+			gbc_btnMonImageAdd.gridy = 0;
+			pnlMonImageControl.add(btnMonImageAdd, gbc_btnMonImageAdd);
+			
+			btnMonImageDel = new JButton("-");
+			btnMonImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[1]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[1][imagenum[0]], DataManager.dayofweekURL[1][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnMonImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnMonImageDel = new GridBagConstraints();
+			gbc_btnMonImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnMonImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnMonImageDel.gridx = 0;
+			gbc_btnMonImageDel.gridy = 1;
+			pnlMonImageControl.add(btnMonImageDel, gbc_btnMonImageDel);
+			
+			btnMonImagePass = new JButton("\u25B2");
+			btnMonImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(imagenum[1]-1 >= 0){
+						btnMonImageViewDefault.setIcon(dayImageChanger(1, false));
+						imagenum[1]--;
+					}
+				}
+			});
+			btnMonImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnMonImagePass = new GridBagConstraints();
+			gbc_btnMonImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnMonImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnMonImagePass.gridx = 0;
+			gbc_btnMonImagePass.gridy = 2;
+			pnlMonImageControl.add(btnMonImagePass, gbc_btnMonImagePass);
+			
+			btnMonImageReturn = new JButton("\u25BC");
+			btnMonImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[1]+1 <= DataManager.dayofweekICnum[1]-1){
+						btnMonImageViewDefault.setIcon(dayImageChanger(1, true));
+						imagenum[1]++;
+					}
+				}
+			});
+			btnMonImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnMonImageReturn = new GridBagConstraints();
+			gbc_btnMonImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnMonImageReturn.gridx = 0;
+			gbc_btnMonImageReturn.gridy = 3;
+			pnlMonImageControl.add(btnMonImageReturn, gbc_btnMonImageReturn);
+			
+			pnlTueContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlTueContentsDefault = new GridBagConstraints();
+			gbc_pnlTueContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlTueContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlTueContentsDefault.gridx = 0;
+			gbc_pnlTueContentsDefault.gridy = 2;
+			pnlShowContentsDefault.add(pnlTueContentsDefault, gbc_pnlTueContentsDefault);
+			pnlTueContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scTueContentsDefault = new JScrollPane();
+			scTueContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlTueContentsDefault.add(scTueContentsDefault);
+			
+			epTueText = new JEditorPane();
+			epTueText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scTueContentsDefault.setViewportView(epTueText);
+			
+			pnlTueImageDefault = new JPanel();
+			scTueContentsDefault.setRowHeaderView(pnlTueImageDefault);
+			pnlTueImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnTueImageViewDefault = new JButton("");
+			btnTueImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[2][imagenum[2]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnTueImageViewDefault.setSize(120, 100);
+			btnTueImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnTueImageViewDefault.setForeground(Color.WHITE);
+			pnlTueImageDefault.add(btnTueImageViewDefault, BorderLayout.CENTER);
+			
+			pnlTueImageControl = new JPanel();
+			pnlTueImageDefault.add(pnlTueImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlTueImageControl = new GridBagLayout();
+			gbl_pnlTueImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlTueImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlTueImageControl.setLayout(gbl_pnlTueImageControl);
+			
+			btnTueImageAdd = new JButton("+");
+			btnTueImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("tueCal",5));
+				}
+			});
+			btnTueImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnTueImageAdd = new GridBagConstraints();
+			gbc_btnTueImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnTueImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnTueImageAdd.gridx = 0;
+			gbc_btnTueImageAdd.gridy = 0;
+			pnlTueImageControl.add(btnTueImageAdd, gbc_btnTueImageAdd);
+			
+			btnTueImageDel = new JButton("-");
+			btnTueImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[2]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[2][imagenum[0]], DataManager.dayofweekURL[2][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnTueImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnTueImageDel = new GridBagConstraints();
+			gbc_btnTueImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnTueImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnTueImageDel.gridx = 0;
+			gbc_btnTueImageDel.gridy = 1;
+			pnlTueImageControl.add(btnTueImageDel, gbc_btnTueImageDel);
+			
+			btnTueImagePass = new JButton("\u25B2");
+			btnTueImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[2]-1 >= 0){
+						btnTueImageViewDefault.setIcon(dayImageChanger(2, false));
+						imagenum[2]--;
+					}
+				}
+			});
+			btnTueImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnTueImagePass = new GridBagConstraints();
+			gbc_btnTueImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnTueImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnTueImagePass.gridx = 0;
+			gbc_btnTueImagePass.gridy = 2;
+			pnlTueImageControl.add(btnTueImagePass, gbc_btnTueImagePass);
+			
+			btnTueImageReturn = new JButton("\u25BC");
+			btnTueImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[2]+1 <= DataManager.dayofweekICnum[2]-1){
+						btnTueImageViewDefault.setIcon(dayImageChanger(2, true));
+						imagenum[2]++;
+					}
+				}
+			});
+			btnTueImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnTueImageReturn = new GridBagConstraints();
+			gbc_btnTueImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnTueImageReturn.gridx = 0;
+			gbc_btnTueImageReturn.gridy = 3;
+			pnlTueImageControl.add(btnTueImageReturn, gbc_btnTueImageReturn);
+			
+			pnlWedContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlWedContentsDefault = new GridBagConstraints();
+			gbc_pnlWedContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlWedContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlWedContentsDefault.gridx = 0;
+			gbc_pnlWedContentsDefault.gridy = 3;
+			pnlShowContentsDefault.add(pnlWedContentsDefault, gbc_pnlWedContentsDefault);
+			pnlWedContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scWedContentsDefault = new JScrollPane();
+			scWedContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlWedContentsDefault.add(scWedContentsDefault);
+			
+			epWedText = new JEditorPane();
+			epWedText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scWedContentsDefault.setViewportView(epWedText);
+			
+			pnlWedImageDefault = new JPanel();
+			scWedContentsDefault.setRowHeaderView(pnlWedImageDefault);
+			pnlWedImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnWedImageViewDefault = new JButton("");
+			btnWedImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[3][imagenum[3]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnWedImageViewDefault.setSize(120, 100);
+			btnWedImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnWedImageViewDefault.setForeground(Color.WHITE);
+			pnlWedImageDefault.add(btnWedImageViewDefault, BorderLayout.CENTER);
+			
+			pnlWedImageControl = new JPanel();
+			pnlWedImageDefault.add(pnlWedImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlWedImageControl = new GridBagLayout();
+			gbl_pnlWedImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlWedImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlWedImageControl.setLayout(gbl_pnlWedImageControl);
+			
+			btnWedImageAdd = new JButton("+");
+			btnWedImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("wedCal",5));
+				}
+			});
+			btnWedImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnWedImageAdd = new GridBagConstraints();
+			gbc_btnWedImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnWedImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnWedImageAdd.gridx = 0;
+			gbc_btnWedImageAdd.gridy = 0;
+			pnlWedImageControl.add(btnWedImageAdd, gbc_btnWedImageAdd);
+			
+			btnWedImageDel = new JButton("-");
+			btnWedImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[3]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[3][imagenum[0]], DataManager.dayofweekURL[3][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnWedImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnWedImageDel = new GridBagConstraints();
+			gbc_btnWedImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnWedImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnWedImageDel.gridx = 0;
+			gbc_btnWedImageDel.gridy = 1;
+			pnlWedImageControl.add(btnWedImageDel, gbc_btnWedImageDel);
+			
+			btnWedImagePass = new JButton("\u25B2");
+			btnWedImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[3]-1 >= 0){
+						btnWedImageViewDefault.setIcon(dayImageChanger(3, false));
+						imagenum[3]--;
+					}
+				}
+			});
+			btnWedImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnWedImagePass = new GridBagConstraints();
+			gbc_btnWedImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnWedImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnWedImagePass.gridx = 0;
+			gbc_btnWedImagePass.gridy = 2;
+			pnlWedImageControl.add(btnWedImagePass, gbc_btnWedImagePass);
+			
+			btnWedImageReturn = new JButton("\u25BC");
+			btnWedImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[3]+1 <= DataManager.dayofweekICnum[3]-1){
+						btnWedImageViewDefault.setIcon(dayImageChanger(3, true));
+						imagenum[3]++;
+					}
+				}
+			});
+			btnWedImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnWedImageReturn = new GridBagConstraints();
+			gbc_btnWedImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnWedImageReturn.gridx = 0;
+			gbc_btnWedImageReturn.gridy = 3;
+			pnlWedImageControl.add(btnWedImageReturn, gbc_btnWedImageReturn);
+			
+			pnlThuContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlThuContentsDefault = new GridBagConstraints();
+			gbc_pnlThuContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlThuContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlThuContentsDefault.gridx = 0;
+			gbc_pnlThuContentsDefault.gridy = 4;
+			pnlShowContentsDefault.add(pnlThuContentsDefault, gbc_pnlThuContentsDefault);
+			pnlThuContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scThuContentsDefault = new JScrollPane();
+			scThuContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlThuContentsDefault.add(scThuContentsDefault);
+			
+			epThuText = new JEditorPane();
+			epThuText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scThuContentsDefault.setViewportView(epThuText);
+			
+			pnlThuImageDefault = new JPanel();
+			scThuContentsDefault.setRowHeaderView(pnlThuImageDefault);
+			pnlThuImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnThuImageViewDefault = new JButton("");
+			btnThuImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[4][imagenum[4]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnThuImageViewDefault.setSize(120, 100);
+			btnThuImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnThuImageViewDefault.setForeground(Color.WHITE);
+			pnlThuImageDefault.add(btnThuImageViewDefault, BorderLayout.CENTER);
+			
+			pnlThuImageControl = new JPanel();
+			pnlThuImageDefault.add(pnlThuImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlThuImageControl = new GridBagLayout();
+			gbl_pnlThuImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlThuImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlThuImageControl.setLayout(gbl_pnlThuImageControl);
+			
+			btnThuImageAdd = new JButton("+");
+			btnThuImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("thuCal",5));
+				}
+			});
+			btnThuImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnThuImageAdd = new GridBagConstraints();
+			gbc_btnThuImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnThuImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnThuImageAdd.gridx = 0;
+			gbc_btnThuImageAdd.gridy = 0;
+			pnlThuImageControl.add(btnThuImageAdd, gbc_btnThuImageAdd);
+			
+			btnThuImageDel = new JButton("-");
+			btnThuImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[4]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[4][imagenum[0]], DataManager.dayofweekURL[4][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnThuImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnThuImageDel = new GridBagConstraints();
+			gbc_btnThuImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnThuImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnThuImageDel.gridx = 0;
+			gbc_btnThuImageDel.gridy = 1;
+			pnlThuImageControl.add(btnThuImageDel, gbc_btnThuImageDel);
+			
+			btnThuImagePass = new JButton("\u25B2");
+			btnThuImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[4]-1 >= 0){
+						btnThuImageViewDefault.setIcon(dayImageChanger(4, false));
+						imagenum[4]--;
+					}
+				}
+			});
+			btnThuImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnThuImagePass = new GridBagConstraints();
+			gbc_btnThuImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnThuImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnThuImagePass.gridx = 0;
+			gbc_btnThuImagePass.gridy = 2;
+			pnlThuImageControl.add(btnThuImagePass, gbc_btnThuImagePass);
+			
+			btnThuImageReturn = new JButton("\u25BC");
+			btnThuImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[4]+1 <= DataManager.dayofweekICnum[4]-1){
+						btnThuImageViewDefault.setIcon(dayImageChanger(4, true));
+						imagenum[4]++;
+					}
+				}
+			});
+			btnThuImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnThuImageReturn = new GridBagConstraints();
+			gbc_btnThuImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnThuImageReturn.gridx = 0;
+			gbc_btnThuImageReturn.gridy = 3;
+			pnlThuImageControl.add(btnThuImageReturn, gbc_btnThuImageReturn);
+			
+			pnlFriContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlFriContentsDefault = new GridBagConstraints();
+			gbc_pnlFriContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlFriContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlFriContentsDefault.gridx = 0;
+			gbc_pnlFriContentsDefault.gridy = 5;
+			pnlShowContentsDefault.add(pnlFriContentsDefault, gbc_pnlFriContentsDefault);
+			pnlFriContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scFriContentsDefault = new JScrollPane();
+			scFriContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlFriContentsDefault.add(scFriContentsDefault);
+			
+			epFriText = new JEditorPane();
+			epFriText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scFriContentsDefault.setViewportView(epFriText);
+			
+			pnlFriImageDefault = new JPanel();
+			scFriContentsDefault.setRowHeaderView(pnlFriImageDefault);
+			pnlFriImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnFriImageViewDefault = new JButton("");
+			btnFriImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[5][imagenum[5]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnFriImageViewDefault.setSize(120, 100);
+			btnFriImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnFriImageViewDefault.setForeground(Color.WHITE);
+			pnlFriImageDefault.add(btnFriImageViewDefault, BorderLayout.CENTER);
+			
+			pnlFriImageControl = new JPanel();
+			pnlFriImageDefault.add(pnlFriImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlFriImageControl = new GridBagLayout();
+			gbl_pnlFriImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlFriImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlFriImageControl.setLayout(gbl_pnlFriImageControl);
+			
+			btnFriImageAdd = new JButton("+");
+			btnFriImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("friCal",5));
+				}
+			});
+			btnFriImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnFriImageAdd = new GridBagConstraints();
+			gbc_btnFriImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnFriImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnFriImageAdd.gridx = 0;
+			gbc_btnFriImageAdd.gridy = 0;
+			pnlFriImageControl.add(btnFriImageAdd, gbc_btnFriImageAdd);
+			
+			btnFriImageDel = new JButton("-");
+			btnFriImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[5]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[5][imagenum[0]], DataManager.dayofweekURL[5][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnFriImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnFriImageDel = new GridBagConstraints();
+			gbc_btnFriImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnFriImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnFriImageDel.gridx = 0;
+			gbc_btnFriImageDel.gridy = 1;
+			pnlFriImageControl.add(btnFriImageDel, gbc_btnFriImageDel);
+			
+			btnFriImagePass = new JButton("\u25B2");
+			btnFriImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[5]-1 >= 0){
+						btnFriImageViewDefault.setIcon(dayImageChanger(5, false));
+						imagenum[5]--;
+					}
+				}
+			});
+			btnFriImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnFriImagePass = new GridBagConstraints();
+			gbc_btnFriImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnFriImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnFriImagePass.gridx = 0;
+			gbc_btnFriImagePass.gridy = 2;
+			pnlFriImageControl.add(btnFriImagePass, gbc_btnFriImagePass);
+			
+			btnFriImageReturn = new JButton("\u25BC");
+			btnFriImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[5]+1 <= DataManager.dayofweekICnum[5]-1){
+						btnFriImageViewDefault.setIcon(dayImageChanger(5, true));
+						imagenum[5]++;
+					}
+				}
+			});
+			btnFriImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnFriImageReturn = new GridBagConstraints();
+			gbc_btnFriImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnFriImageReturn.gridx = 0;
+			gbc_btnFriImageReturn.gridy = 3;
+			pnlFriImageControl.add(btnFriImageReturn, gbc_btnFriImageReturn);
+			
+			pnlSatContentsDefault = new JPanel();
+			GridBagConstraints gbc_pnlSatContentsDefault = new GridBagConstraints();
+			gbc_pnlSatContentsDefault.insets = new Insets(0, 0, 0, 0);
+			gbc_pnlSatContentsDefault.fill = GridBagConstraints.BOTH;
+			gbc_pnlSatContentsDefault.gridx = 0;
+			gbc_pnlSatContentsDefault.gridy = 6;
+			pnlShowContentsDefault.add(pnlSatContentsDefault, gbc_pnlSatContentsDefault);
+			pnlSatContentsDefault.setLayout(new GridLayout(1, 0, 0, 0));
+			
+			scSatContentsDefault = new JScrollPane();
+			scSatContentsDefault.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pnlSatContentsDefault.add(scSatContentsDefault);
+			
+			epSatText = new JEditorPane();
+			epSatText.setFont(new Font("굴림", Font.PLAIN, 9));
+			scSatContentsDefault.setViewportView(epSatText);
+			
+			pnlSatImageDefault = new JPanel();
+			scSatContentsDefault.setRowHeaderView(pnlSatImageDefault);
+			pnlSatImageDefault.setLayout(new BorderLayout(0, 0));
+			
+			btnSatImageViewDefault = new JButton("");
+			btnSatImageViewDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					 try {
+						 Desktop.getDesktop().browse(new java.net.URI(DataManager.dayofweekURL[6][imagenum[6]]));
+					 }
+					 catch(IOException e1) {
+						 e1.printStackTrace();
+					 }
+					 catch(URISyntaxException e1) {
+						 e1.printStackTrace();
+					 }
+				}
+			});
+			btnSatImageViewDefault.setSize(120, 100);
+			btnSatImageViewDefault.setMargin(new Insets(0, 0, 0, 0));
+			btnSatImageViewDefault.setForeground(Color.WHITE);
+			pnlSatImageDefault.add(btnSatImageViewDefault, BorderLayout.CENTER);
+			
+			pnlSatImageControl = new JPanel();
+			pnlSatImageDefault.add(pnlSatImageControl, BorderLayout.EAST);
+			GridBagLayout gbl_pnlSatImageControl = new GridBagLayout();
+			gbl_pnlSatImageControl.columnWeights = new double[]{1.0};
+			gbl_pnlSatImageControl.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+			pnlSatImageControl.setLayout(gbl_pnlSatImageControl);
+			
+			btnSatImageAdd = new JButton("+");
+			btnSatImageAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Main.openframeImageContainer(DateManager.toString("satCal",5));
+				}
+			});
+			btnSatImageAdd.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSatImageAdd = new GridBagConstraints();
+			gbc_btnSatImageAdd.fill = GridBagConstraints.BOTH;
+			gbc_btnSatImageAdd.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSatImageAdd.gridx = 0;
+			gbc_btnSatImageAdd.gridy = 0;
+			pnlSatImageControl.add(btnSatImageAdd, gbc_btnSatImageAdd);
+			
+			btnSatImageDel = new JButton("-");
+			btnSatImageDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(DataManager.dayofweekICnum[6]!=0){
+						DataManager.fixDecodedImage("del", "", DataManager.dayofweekImage[6][imagenum[0]], DataManager.dayofweekURL[6][imagenum[0]]);
+						DataManager.saveIndex('i');
+					
+						weekContentsChanger();
+					}
+				}
+			});
+			btnSatImageDel.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSatImageDel = new GridBagConstraints();
+			gbc_btnSatImageDel.fill = GridBagConstraints.BOTH;
+			gbc_btnSatImageDel.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSatImageDel.gridx = 0;
+			gbc_btnSatImageDel.gridy = 1;
+			pnlSatImageControl.add(btnSatImageDel, gbc_btnSatImageDel);
+			
+			btnSatImagePass = new JButton("\u25B2");
+			btnSatImagePass.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[6]-1 >= 0){
+						btnSatImageViewDefault.setIcon(dayImageChanger(6, false));
+						imagenum[6]--;
+					}
+				}
+			});
+			btnSatImagePass.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSatImagePass = new GridBagConstraints();
+			gbc_btnSatImagePass.fill = GridBagConstraints.BOTH;
+			gbc_btnSatImagePass.insets = new Insets(0, 0, 0, 0);
+			gbc_btnSatImagePass.gridx = 0;
+			gbc_btnSatImagePass.gridy = 2;
+			pnlSatImageControl.add(btnSatImagePass, gbc_btnSatImagePass);
+			
+			btnSatImageReturn = new JButton("\u25BC");
+			btnSatImageReturn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(imagenum[6]+1 <= DataManager.dayofweekICnum[6]-1){
+						btnSatImageViewDefault.setIcon(dayImageChanger(6, true));
+						imagenum[6]++;
+					}
+				}
+			});
+			btnSatImageReturn.setFont(new Font("굴림", Font.PLAIN, 10));
+			GridBagConstraints gbc_btnSatImageReturn = new GridBagConstraints();
+			gbc_btnSatImageReturn.fill = GridBagConstraints.HORIZONTAL;
+			gbc_btnSatImageReturn.gridx = 0;
+			gbc_btnSatImageReturn.gridy = 3;
+			pnlSatImageControl.add(btnSatImageReturn, gbc_btnSatImageReturn);
+			//ShowContentsDefault 패널 End
+			
+			
+			
+			
+			
+			//ShowContentsImageMode 패널 Start
+			pnlShowContentsImageMode = new JPanel();
+			pnlShowContents.add(pnlShowContentsImageMode, "name_611415724343457");
+			GridBagLayout gbl_pnlShowContentsImageMode = new GridBagLayout();
+			gbl_pnlShowContentsImageMode.columnWeights = new double[]{1.0, 1.0};
+			gbl_pnlShowContentsImageMode.rowWeights = new double[]{0.0, 1.0, 1.0, 1.0, 1.0};
+			pnlShowContentsImageMode.setLayout(gbl_pnlShowContentsImageMode);
+			pnlShowContentsImageMode.setVisible(false);
+			
+			pnlImageModeControl = new JPanel();
+			GridBagConstraints gbc_pnlImageModeControl = new GridBagConstraints();
+			gbc_pnlImageModeControl.gridwidth = 2;
+			gbc_pnlImageModeControl.insets = new Insets(0, 0, 5, 5);
+			gbc_pnlImageModeControl.fill = GridBagConstraints.BOTH;
+			gbc_pnlImageModeControl.gridx = 0;
+			gbc_pnlImageModeControl.gridy = 0;
+			pnlShowContentsImageMode.add(pnlImageModeControl, gbc_pnlImageModeControl);
+			pnlImageModeControl.setLayout(new BorderLayout(0, 0));
+			
+			btnAddImage = new JButton("Add");
+			pnlImageModeControl.add(btnAddImage, BorderLayout.WEST);
+			
+			pnlImageModeControl2 = new JPanel();
+			FlowLayout fl_pnlImageModeControl2 = (FlowLayout) pnlImageModeControl2.getLayout();
+			fl_pnlImageModeControl2.setVgap(0);
+			fl_pnlImageModeControl2.setHgap(0);
+			pnlImageModeControl.add(pnlImageModeControl2, BorderLayout.EAST);
+			
+			btnLast8Images = new JButton("Last 8 imgs");
+			btnLast8Images.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				}
+			});
+			pnlImageModeControl2.add(btnLast8Images);
+			
+			btnNext8Images = new JButton("Next 8 imgs");
+			pnlImageModeControl2.add(btnNext8Images);
+			
+			btnImageModeImage1 = new JButton("");
+			btnImageModeImage1.setMargin(new Insets(0,0,0,0));
+			btnImageModeImage1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				}
+			});
+			GridBagConstraints gbc_btnImageModeImage1 = new GridBagConstraints();
+			gbc_btnImageModeImage1.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage1.insets = new Insets(0, 0, 5, 5);
+			gbc_btnImageModeImage1.gridx = 0;
+			gbc_btnImageModeImage1.gridy = 1;
+			pnlShowContentsImageMode.add(btnImageModeImage1, gbc_btnImageModeImage1);
+			
+			btnImageModeImage2 = new JButton("");
+			btnImageModeImage2.setMargin(new Insets(0, 0, 0, 0));
+			btnImageModeImage2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			GridBagConstraints gbc_btnImageModeImage2 = new GridBagConstraints();
+			gbc_btnImageModeImage2.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage2.insets = new Insets(0, 0, 5, 0);
+			gbc_btnImageModeImage2.gridx = 1;
+			gbc_btnImageModeImage2.gridy = 1;
+			pnlShowContentsImageMode.add(btnImageModeImage2, gbc_btnImageModeImage2);
+			
+			btnImageModeImage3 = new JButton("");
+			btnImageModeImage3.setMargin(new Insets(0, 0, 0, 0));
+			GridBagConstraints gbc_btnImageModeImage3 = new GridBagConstraints();
+			gbc_btnImageModeImage3.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage3.insets = new Insets(0, 0, 5, 5);
+			gbc_btnImageModeImage3.gridx = 0;
+			gbc_btnImageModeImage3.gridy = 2;
+			pnlShowContentsImageMode.add(btnImageModeImage3, gbc_btnImageModeImage3);
+			
+			btnImageModeImage4 = new JButton("");
+			btnImageModeImage4.setMargin(new Insets(0, 0, 0, 0));
+			GridBagConstraints gbc_btnImageModeImage4 = new GridBagConstraints();
+			gbc_btnImageModeImage4.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage4.insets = new Insets(0, 0, 5, 0);
+			gbc_btnImageModeImage4.gridx = 1;
+			gbc_btnImageModeImage4.gridy = 2;
+			pnlShowContentsImageMode.add(btnImageModeImage4, gbc_btnImageModeImage4);
+			
+			btnImageModeImage5 = new JButton("");
+			btnImageModeImage5.setMargin(new Insets(0, 0, 0, 0));
+			GridBagConstraints gbc_btnImageModeImage5 = new GridBagConstraints();
+			gbc_btnImageModeImage5.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage5.insets = new Insets(0, 0, 5, 5);
+			gbc_btnImageModeImage5.gridx = 0;
+			gbc_btnImageModeImage5.gridy = 3;
+			pnlShowContentsImageMode.add(btnImageModeImage5, gbc_btnImageModeImage5);
+			
+			btnImageModeImage6 = new JButton("");
+			btnImageModeImage6.setMargin(new Insets(0, 0, 0, 0));
+			GridBagConstraints gbc_btnImageModeImage6 = new GridBagConstraints();
+			gbc_btnImageModeImage6.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage6.insets = new Insets(0, 0, 5, 0);
+			gbc_btnImageModeImage6.gridx = 1;
+			gbc_btnImageModeImage6.gridy = 3;
+			pnlShowContentsImageMode.add(btnImageModeImage6, gbc_btnImageModeImage6);
+			
+			btnImageModeImage7 = new JButton("");
+			btnImageModeImage7.setMargin(new Insets(0, 0, 0, 0));
+			GridBagConstraints gbc_btnImageModeImage7 = new GridBagConstraints();
+			gbc_btnImageModeImage7.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage7.insets = new Insets(0, 0, 0, 5);
+			gbc_btnImageModeImage7.gridx = 0;
+			gbc_btnImageModeImage7.gridy = 4;
+			pnlShowContentsImageMode.add(btnImageModeImage7, gbc_btnImageModeImage7);
+			
+			btnImageModeImage8 = new JButton("");
+			GridBagConstraints gbc_btnImageModeImage8 = new GridBagConstraints();
+			gbc_btnImageModeImage8.fill = GridBagConstraints.BOTH;
+			gbc_btnImageModeImage8.gridx = 1;
+			gbc_btnImageModeImage8.gridy = 4;
+			pnlShowContentsImageMode.add(btnImageModeImage8, gbc_btnImageModeImage8);
+			//ShowContentsImageMode 패널 End
+		//ShowContents 패널 End
+		
+		epSunText.setEditable(false);
+		epMonText.setEditable(false);
+		epTueText.setEditable(false);
+		epWedText.setEditable(false);
+		epThuText.setEditable(false);
+		epFriText.setEditable(false);
+		epSatText.setEditable(false);
+		epSunText.setContentType("text/html");
+		epMonText.setContentType("text/html");
+		epTueText.setContentType("text/html");
+		epWedText.setContentType("text/html");
+		epThuText.setContentType("text/html");
+		epFriText.setContentType("text/html");
+		epSatText.setContentType("text/html");
+		
+		frameHome.setVisible(true);
+		
+		DataManager.decodeIndex('t');
+		DataManager.decodeIndex('i');
+		
+		weekContentsChanger();
+	}
+	
+	
+	public void weekContentsChanger(){
+		//해당주 분할
+		DataManager.sortDOWText();
+		DataManager.sortDOWImageContents();
+		//로딩
+		weekDateChanger();
+		weekImageChanger();
+		weekTextChanger();
+	}
+	private void weekDateChanger(){
+		for(int i=0; i<7; i++){
+			imagenum[i]=0;
+		}//이미지 번호 리셋
+		btnWarpDate.setLabel(DateManager.toString(DateManager.getOriginal(),3));
+		lblSunDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("sunCal",1)) ? DateManager.toString("sunCal",0) : DateManager.toString("sunCal",2));
+		lblMonDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("monCal",1)) ? DateManager.toString("monCal",0) : DateManager.toString("monCal",2));
+		lblTueDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("tueCal",1)) ? DateManager.toString("tueCal",0) : DateManager.toString("tueCal",2));
+		lblWedDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("wedCal",1)) ? DateManager.toString("wedCal",0) : DateManager.toString("wedCal",2));
+		lblThuDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("thuCal",1)) ? DateManager.toString("thuCal",0) : DateManager.toString("thuCal",2));
+		lblFriDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("friCal",1)) ? DateManager.toString("friCal",0) : DateManager.toString("friCal",2));
+		lblSatDate.setText(DateManager.toString("satCal",1).equals(DateManager.toString("satCal",1)) ? DateManager.toString("satCal",0) : DateManager.toString("satCal",2));
+	}
+	public void weekImageChanger(){
+		btnSunImageViewDefault.setIcon(  (DataManager.dayofweekICnum[0]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[0][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnMonImageViewDefault.setIcon(  (DataManager.dayofweekICnum[1]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[1][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnTueImageViewDefault.setIcon(  (DataManager.dayofweekICnum[2]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[2][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnWedImageViewDefault.setIcon(  (DataManager.dayofweekICnum[3]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[3][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnThuImageViewDefault.setIcon(  (DataManager.dayofweekICnum[4]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[4][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnFriImageViewDefault.setIcon(  (DataManager.dayofweekICnum[5]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[5][0]+".png"), 200, lblSunDate.getHeight())  );
+		btnSatImageViewDefault.setIcon(  (DataManager.dayofweekICnum[6]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[6][0]+".png"), 200, lblSunDate.getHeight())  );
+	}
+	private void weekTextChanger(){
+		epSunText.setText(DataManager.dayofweekText[0]);
+		epMonText.setText(DataManager.dayofweekText[1]);
+		epTueText.setText(DataManager.dayofweekText[2]);
+		epWedText.setText(DataManager.dayofweekText[3]);
+		epThuText.setText(DataManager.dayofweekText[4]);
+		epFriText.setText(DataManager.dayofweekText[5]);
+		epSatText.setText(DataManager.dayofweekText[6]);
+	}
+	private ImageIcon dayImageChanger(int dayofweek, boolean identifier){//날짜당 이미지 체인저
+		if(identifier){//다음 이미지, identifier=true
+			return rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][imagenum[dayofweek]+1]+".png"), 200, lblSunDate.getHeight());
+		}
+		else{//이전 이미지,
+			return rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][imagenum[dayofweek]-1]+".png"), 200, lblSunDate.getHeight());
+		}
+	}
+	private void dayContentsModeChanger(int dayofweek, boolean modechange){
+		if(modechange){
+			imagemode=modechange;
+			pnlShowContentsDefault.setVisible(false);
+			pnlShowContentsImageMode.setVisible(true);
+			
+			btnImageModeImage1.setIcon(  (DataManager.dayofweekICnum[dayofweek]==0) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][0]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage2.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=1) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][1]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage3.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=2) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][2]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage4.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=3) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][3]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage5.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=4) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][4]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage6.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=5) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][5]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage7.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=6) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][6]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+			btnImageModeImage8.setIcon(  (DataManager.dayofweekICnum[dayofweek]<=7) ? rescaleImage(new File(DataManager.route+"system\\defaultImage.png"), 120, 100) : rescaleImage(new File(DataManager.route+"data\\image\\"+DataManager.dayofweekImage[dayofweek][7]+".png"), btnImageModeImage1.getWidth(), btnImageModeImage1.getHeight())  );
+		}
+		else{
+			imagemode=modechange;
+			pnlShowContentsDefault.setVisible(true);
+			pnlShowContentsImageMode.setVisible(false);
+			weekContentsChanger();
+		}
+	}
+	public ImageIcon rescaleImage(File source,int maxWidth, int maxHeight)
+	{
+	    int newHeight = 0, newWidth = 0;        // Variables for the new height and width
+	    int priorHeight = 0, priorWidth = 0;
+	    BufferedImage image = null;
+	    ImageIcon sizeImage;
+
+	    if(!source.exists()&&!DataManager.onlinemode)
+	    	source=new File(DataManager.route+"system\\defaultImage.png");
+	    
+	    try {
+	            image = ImageIO.read(source);        // get the image
+	    }
+	    catch(Exception e){
+	            e.printStackTrace();
+	    }
+
+	    sizeImage = new ImageIcon(image);
+
+	    if(sizeImage!=null)
+	    {
+	        priorHeight = sizeImage.getIconHeight(); 
+	        priorWidth = sizeImage.getIconWidth();
+	    }
+
+	    // Calculate the correct new height and width
+	    if((float)priorHeight/(float)priorWidth > (float)maxHeight/(float)maxWidth)
+	    {
+	        newHeight = maxHeight;
+	        newWidth = (int)(((float)priorWidth/(float)priorHeight)*(float)newHeight);
+	    }
+	    else 
+	    {
+	        newWidth = maxWidth;
+	        newHeight = (int)(((float)priorHeight/(float)priorWidth)*(float)newWidth);
+	    }
+
+
+	    // Resize the image
+
+	    // 1. Create a new Buffered Image and Graphic2D object
+	    BufferedImage resizedImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+	    Graphics2D g2 = resizedImg.createGraphics();
+
+	    // 2. Use the Graphic object to draw a new image to the image in the buffer
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(image, 0, 0, newWidth, newHeight, null);
+	    g2.dispose();
+
+	    // 3. Convert the buffered image into an ImageIcon for return
+	    return (new ImageIcon(resizedImg));
+	}
+}

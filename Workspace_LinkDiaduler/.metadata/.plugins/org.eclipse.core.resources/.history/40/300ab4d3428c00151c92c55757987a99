@@ -1,0 +1,300 @@
+package com.thesophist.window.macro;
+
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+import java.util.StringTokenizer;
+
+public class ControlRobot {
+	private static Robot robot;
+
+	public static String[] MOUSE_BUTTON_SPECIES={"Left","Middle","Right"};
+	public static String[] MOUSE_EVENTS_SPECIES={"press&release","press","release"};//move朝 評煎 掘⑷脾
+	public static String[] KEY_BUTTON_SPECIES={"backspace","tab","enter","shift","ctrl","alt","pause/break","caps.lock","escape","page.up","page.down","end","home","left.arrow","up.arrow","right.arrow","down.arrow","insert","delete","0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","left.window.key","right.window.key","select.key","numpad.0","numpad.1","numpad.2","numpad.3","numpad.4","numpad.5","numpad.6","numpad.7","numpad.8","numpad.9","multiply","add","subtract","decimal.point","divide","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12","num.lock","scroll.lock","semi-colon","equal.sign","comma","dash","period","forward.slash","grave.accent","open.bracket","back.slash","close.braket","single.quote"};
+	public static String[] KEY_EVENTS_SPECIES={"press&release","press","release"};	
+
+	public static String packKeyEvent(String event, String key){
+		String rt="Did you hacked? 天天";
+		switch(event){
+		case "press":	//Key press
+			rt="press "+key;
+			break;
+		case "release":	//Key Release
+			rt="release "+key;
+			break;
+		}
+		return rt;
+	}
+	public static String packMouseEvent(String event, String mouseVariable){
+		String rt="Did you hacked? 天天";
+		switch(event){
+		case "move":	//Cursor Move
+			rt="mouse_move "+mouseVariable;
+			break;
+		case "press":	//Mouse press
+			rt="mouse_press "+mouseVariable;
+			break;
+		case "release":	//Mouse Release
+			rt="mouse_release "+mouseVariable;
+			break;
+		}
+		return rt;
+	}
+	public static String packDelay(int msecond){
+		return "delay "+msecond;
+	}
+	
+	public static void eventMoveCursor(int x, int y){
+		try {
+			robot=new Robot();
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+		robot.mouseMove(x, y);
+	}
+	
+	public static void unpackEvent(String macro){
+		try {
+			robot=new Robot();
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+		StringTokenizer st;
+
+		st = new StringTokenizer(macro);
+
+		switch(st.nextToken()){
+		case "press":
+			robot.keyPress(KeyEvent.getExtendedKeyCodeForChar(toKeyCode(st.nextToken())));
+			break;
+		case "release":
+			robot.keyRelease(KeyEvent.getExtendedKeyCodeForChar(toKeyCode(st.nextToken())));
+			break;
+		case "mouse_move":
+			int a=Integer.parseInt(st.nextToken());
+			eventMoveCursor(a/10000,a%10000);
+			break;
+		case "mouse_press":
+			robot.mousePress(toMouseButtonCode(st.nextToken()));
+			break;
+		case "mouse_release":
+			robot.mouseRelease(toMouseButtonCode(st.nextToken()));
+			break;
+		case "delay":
+			robot.delay(Integer.parseInt(st.nextToken()));
+		}
+	}
+
+	public static int toMouseButtonCode(String button){
+		switch(button){
+		case "Left":
+			return 16;
+		case "Middle":
+			return 8;
+		case "Right":
+			return 4;
+		}
+		return 0;
+	}
+	public static int toKeyCode(String button){
+		switch(button){
+		case "backspace":
+			return 8;
+		case "tab":
+			return 9;
+		case "enter":
+			return 13;
+		case "shift":
+			return 16;
+		case "ctrl":
+			return 17;
+		case "alt":
+			return 18;
+		case "pause/break":
+			return 19;
+		case "caps lock":
+			return 20;
+		case "escape":
+			return 27;
+		case "page up":
+			return 33;
+		case "page down":
+			return 34;
+		case "end":
+			return 35;
+		case "home":
+			return 36;
+		case "left arrow":
+			return 37;
+		case "up arrow":
+			return 38;
+		case "right arrow":
+			return 39;
+		case "down arrow":
+			return 40;
+		case "insert":
+			return 45;
+		case "delete":
+			return 46;
+		case "0":
+			return 48;
+		case "1":
+			return 49;
+		case "2":
+			return 50;
+		case "3":
+			return 51;
+		case "4":
+			return 52;
+		case "5":
+			return 53;
+		case "6":
+			return 54;
+		case "7":
+			return 55;
+		case "8":
+			return 56;
+		case "9":
+			return 57;
+		case "a":
+			return 65;
+		case "b":
+			return 66;
+		case "c":
+			return 67;
+		case "d":
+			return 68;
+		case "e":
+			return 69;
+		case "f":
+			return 70;
+		case "g":
+			return 71;
+		case "h":
+			return 72;
+		case "i":
+			return 73;
+		case "j":
+			return 74;
+		case "k":
+			return 75;
+		case "l":
+			return 76;
+		case "m":
+			return 77;
+		case "n":
+			return 78;
+		case "o":
+			return 79;
+		case "p":
+			return 80;
+		case "q":
+			return 81;
+		case "r":
+			return 82;
+		case "s":
+			return 83;
+		case "t":
+			return 84;
+		case "u":
+			return 85;
+		case "v":
+			return 86;
+		case "w":
+			return 87;
+		case "x":
+			return 88;
+		case "y":
+			return 89;
+		case "z":
+			return 90;
+		case "left window key":
+			return 91;
+		case "right window key":
+			return 92;
+		case "select key":
+			return 93;
+		case "numpad 0":
+			return 96;
+		case "numpad 1":
+			return 97;
+		case "numpad 2":
+			return 98;
+		case "numpad 3":
+			return 99;
+		case "numpad 4":
+			return 100;
+		case "numpad 5":
+			return 101;
+		case "numpad 6":
+			return 102;
+		case "numpad 7":
+			return 103;
+		case "numpad 8":
+			return 104;
+		case "numpad 9":
+			return 105;
+		case "multiply":
+			return 106;
+		case "add":
+			return 107;
+		case "subtract":
+			return 109;
+		case "decimal point":
+			return 110;
+		case "divide":
+			return 111;
+		case "f1":
+			return 112;
+		case "f2":
+			return 113;
+		case "f3":
+			return 114;
+		case "f4":
+			return 115;
+		case "f5":
+			return 116;
+		case "f6":
+			return 117;
+		case "f7":
+			return 118;
+		case "f8":
+			return 119;
+		case "f9":
+			return 120;
+		case "f10":
+			return 121;
+		case "f11":
+			return 122;
+		case "f12":
+			return 123;
+		case "num lock":
+			return 144;
+		case "scroll lock":
+			return 145;
+		case "semi-colon":
+			return 186;
+		case "equal sign":
+			return 187;
+		case "comma":
+			return 188;
+		case "dash":
+			return 189;
+		case "period":
+			return 190;
+		case "forward slash":
+			return 191;
+		case "grave accent":
+			return 192;
+		case "open bracket":
+			return 219;
+		case "back slash":
+			return 220;
+		case "close braket":
+			return 221;
+		case "single quote":
+			return 222;
+		}
+		return 0;
+	}
+}

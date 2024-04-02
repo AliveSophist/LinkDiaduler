@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="유형 &apos;com.test.LinkDiaduler&apos;을(를) &apos;First&apos;(으)로 이름 바꾸기&#x0D;&#x0A;- 원래 프로젝트: &apos;Test&apos;&#x0D;&#x0A;- 원래 요소: &apos;com.test.LinkDiaduler&apos;&#x0D;&#x0A;- 이름을 바꾼 요소: &apos;com.test.First&apos;&#x0D;&#x0A;- 리팩토링된 요소에 대한 참조 갱신&#x0D;&#x0A;- 주석 및 문자열에서 텍스트 발생 갱신" description="&apos;LinkDiaduler&apos; 유형 이름을 바꿉니다." flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;com.test{LinkDiaduler.java[LinkDiaduler" matchStrategy="1" name="First" qualified="false" references="true" similarDeclarations="false" stamp="1446184251551" textual="false" version="1.0"/>
+</session>

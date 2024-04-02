@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="유형 &apos;com.linkdiaduler.CarrierManager&apos;을(를) &apos;Carrier&apos;(으)로 이름 바꾸기&#x0D;&#x0A;- 원래 프로젝트: &apos;Link Diaduler&apos;&#x0D;&#x0A;- 원래 요소: &apos;com.linkdiaduler.CarrierManager&apos;&#x0D;&#x0A;- 이름을 바꾼 요소: &apos;com.linkdiaduler.Carrier&apos;&#x0D;&#x0A;- 리팩토링된 요소에 대한 참조 갱신&#x0D;&#x0A;- 주석 및 문자열에서 텍스트 발생 갱신" description="&apos;CarrierManager&apos; 유형 이름을 바꿉니다." flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;com.linkdiaduler{CarrierManager.java[CarrierManager" matchStrategy="1" name="Carrier" qualified="false" references="true" similarDeclarations="false" stamp="1402126387145" textual="false" version="1.0"/>
+</session>

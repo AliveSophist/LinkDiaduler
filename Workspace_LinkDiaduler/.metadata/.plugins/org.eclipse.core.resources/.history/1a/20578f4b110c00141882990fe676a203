@@ -1,0 +1,49 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+import java.awt.Window.Type;
+import java.awt.GridBagLayout;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JSpinner;
+import javax.swing.JList;
+
+public class WarpDate {
+
+	public JFrame frameWarpDate;
+	private JComboBox cbWarpYear, cbWarpMonth, cbWarpDate;
+
+	public WarpDate() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frameWarpDate = new JFrame();
+		frameWarpDate.setResizable(false);
+		frameWarpDate.setType(Type.UTILITY);
+		frameWarpDate.setBounds(100, 100, 230, 120);
+		frameWarpDate.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameWarpDate.getContentPane().setLayout(null);
+		
+		cbWarpYear = new JComboBox();
+		for(int year=1990; year<=DateManager.limitEnd; year++)
+			cbWarpYear.addItem(year+"");
+		cbWarpYear.setBounds(12, 10, 78, 38);
+		frameWarpDate.getContentPane().add(cbWarpYear);
+		
+		cbWarpMonth = new JComboBox();
+		cbWarpMonth.setBounds(102, 10, 49, 38);
+		frameWarpDate.getContentPane().add(cbWarpMonth);
+		
+		cbWarpDate = new JComboBox();
+		cbWarpDate.setBounds(163, 10, 49, 38);
+		frameWarpDate.getContentPane().add(cbWarpDate);
+		
+		JButton btnNewButton = new JButton("W a r p !");
+		btnNewButton.setBounds(12, 58, 200, 28);
+		frameWarpDate.getContentPane().add(btnNewButton);
+	}
+}

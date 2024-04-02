@@ -1,0 +1,40 @@
+package com.lindaserver;
+
+import java.io.Serializable;
+
+import javax.swing.ImageIcon;
+
+@SuppressWarnings("serial")
+public class CarrierFromServer implements Serializable{
+	
+	String happening;
+	//수신받아야할 놈들
+	String lasttextindex;//last 스왑 텍스트인덱스
+	String textindex;	//스왑을통해 이전인덱스 이후인덱스의 서버 액세스를 최소화.
+	String nexttextindex;//next 스왑 텍스트인덱스
+	String lastimageindex;//last 스왑 이미지인덱스
+	String imageindex;	//스왑을통해 이전인덱스 이후인덱스의 서버 액세스를 최소화.
+	String nextimageindex;//next 스왑 이미지인덱스
+	ImageIcon[][] dayofweekImage;
+
+	public CarrierFromServer(String happening, String serialCode, String SSClist)//serialCode & SSClist can null
+	{//register, login
+		
+	}
+	public CarrierFromServer(String happening, String index, char kind)
+	{//download week indexs
+		
+	}
+	public CarrierFromServer(String happening, ImageIcon[] imageicon, int imagenum)
+	{//upload index(Text or Image)
+		
+	}
+	public CarrierFromServer(String happening)
+	{//upload image, add del subscribe
+		
+	}
+	public CarrierFromServer(String happening, String SSCserialCode)
+	{//show SSC
+		
+	}
+}

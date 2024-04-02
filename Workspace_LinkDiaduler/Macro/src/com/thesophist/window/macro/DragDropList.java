@@ -1,0 +1,70 @@
+package com.thesophist.window.macro;
+
+import java.awt.event.MouseEvent;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputAdapter;
+
+@SuppressWarnings("serial")
+public class DragDropList extends JList<String>{
+
+	public static DefaultListModel<String> myListModel;
+	
+    public DragDropList() {
+        myListModel = createStringListModel();
+        this.setModel(myListModel);
+        MyMouseAdaptor myMouseAdaptor = new MyMouseAdaptor();
+        this.addMouseListener(myMouseAdaptor);
+        this.addMouseMotionListener(myMouseAdaptor);
+    }
+
+    private class MyMouseAdaptor extends MouseInputAdapter {
+        private boolean mouseDragging = false;
+        private int dragSourceIndex;
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                dragSourceIndex = JPanelHome.list.getSelectedIndex();
+                mouseDragging = true;
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            mouseDragging = false;
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if (mouseDragging) {
+                int currentIndex = JPanelHome.list.locationToIndex(e.getPoint());
+                if (currentIndex != dragSourceIndex) {
+                    int dragTargetIndex = JPanelHome.list.getSelectedIndex();
+                    String dragElement = myListModel.get(dragSourceIndex);
+                    myListModel.remove(dragSourceIndex);
+                    myListModel.add(dragTargetIndex, dragElement);
+                    dragSourceIndex = currentIndex;
+                }
+            }
+        }
+    }
+
+    private DefaultListModel<String> createStringListModel() {
+        final String[] listElements = FileInOutput.macrolist;
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        for (String element : listElements) {
+            listModel.addElement(element);
+        }
+        return listModel;
+    }
+    
+    public void addElement(String action){
+    	myListModel.addElement(action);
+    }
+    public void deleteElement(int trash){
+    	myListModel.removeElementAt(trash);
+    }
+}

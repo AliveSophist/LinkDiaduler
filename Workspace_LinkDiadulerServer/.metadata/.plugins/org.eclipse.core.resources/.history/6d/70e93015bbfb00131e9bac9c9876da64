@@ -1,0 +1,176 @@
+package com.linkdiaduler;
+
+import java.sql.*;
+
+public class SQLWords {
+	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+	static final String DB_URL = "jdbc:mysql://localhost/linkdiaduler";
+	static String USER = "SOPHIST";
+	static String PASS = "link5142diaduler";
+
+	static Connection conn = null;
+	static Statement stmt = null;
+	ResultSet rs = null;
+	
+	public static void createDB(){//데이터 베이스 제작.
+		try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName("com.mysql.jdbc.Driver");
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to database...");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+		      //STEP 4: Execute a query
+		      System.out.println("Creating database...");
+		      stmt = conn.createStatement();
+		      
+		      String sql = "CREATE DATABASE STUDENTS";
+		      stmt.executeUpdate(sql);
+		      System.out.println("Database created successfully...");
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            stmt.close();
+		      }catch(SQLException se2){
+		      }// nothing we can do
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+	}//end createdb
+	
+	public static void createAccountTable() {//데이터 베이스 제작후 즉시 이행
+		   Connection conn = null;
+		   Statement stmt = null;
+		   try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName("com.mysql.jdbc.Driver");
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      System.out.println("Connected database successfully...");
+		      
+		      //STEP 4: Execute a query
+		      System.out.println("Creating table in given database...");
+		      stmt = conn.createStatement();
+		      
+		      String sql = "create table accounts( " +
+		                   "memberid varchar(10) not null primary key," + 
+		                   "memberpw varchar(10) not null," + 
+		                   "memberip varchar(20) not null," + 
+		                   "serialcode varchar(16) not null," + 
+		                   "sscaccept BOOL not null," +
+		                   "ssclist varchar(255)," +
+		                   "email varchar(80) not null)"; 
+
+		      stmt.executeUpdate(sql);
+		      System.out.println("Created table in given database...");
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		      }// do nothing
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+		}//end createtable
+	public static void createUserTable(String serialCode) {//데이터 베이스 제작후 즉시 이행
+		   Connection conn = null;
+		   Statement stmt = null;
+		   try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName("com.mysql.jdbc.Driver");
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      System.out.println("Connected database successfully...");
+		      
+		      //STEP 4: Execute a query
+		      System.out.println("Creating table in given database...");
+		      stmt = conn.createStatement();
+		      
+		      String sqlCreate = "create table "+serialCode+"( " +
+		    		  	   "dates date not null," +
+		    		  	   "texts varchar(20) not null," +
+		    		  	   "images varchar(6) "+serialCode+"( " +
+		                   "email varchar(80) not null)"; 
+		      stmt.executeUpdate(sqlCreate);
+		      System.out.println("Created table in given database...");
+		      
+		      String sqlInsert = "INSERT INTO Registration " +
+	                   "VALUES (100, 'Zara', 'Ali', 18)";
+		      stmt.executeUpdate(sql);
+		      sql = "INSERT INTO Registration " +
+	                   "VALUES (101, 'Mahnaz', 'Fatma', 25)";
+		      stmt.executeUpdate(sql);
+		      sql = "INSERT INTO Registration " +
+	                   "VALUES (102, 'Zaid', 'Khan', 30)";
+		      stmt.executeUpdate(sql);
+		      sql = "INSERT INTO Registration " +
+	                   "VALUES(103, 'Sumit', 'Mittal', 28)";
+		      stmt.executeUpdate(sql);
+		      System.out.println("Inserted records into the table...");
+
+		      
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		      }// do nothing
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+		}//end createtable
+	//STEP 1. Import required packages
+
+	
+
+
+
+
+
+	public static void main(String[] args) {
+		
+		
+	}
+}//end JDBCExample

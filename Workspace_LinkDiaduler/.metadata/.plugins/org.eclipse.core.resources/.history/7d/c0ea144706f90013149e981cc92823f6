@@ -1,0 +1,8 @@
+package com.linkdiaduler;
+
+public class MainForOnline {
+
+	public static void main(String[] args) {
+		DateManager.
+	}
+}

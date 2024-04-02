@@ -1,0 +1,36 @@
+package com.linkdiaduler;
+
+import java.io.File;
+
+public class SQLwords {
+	public String update(String id, String accessDate, File file){
+		//UPDATE username SET image 'imagefile' WHERE Date='accessDate'
+		String sql = "UPDATE "+id+"SET image='"+file+"' WHERE Date='"+accessDate+"'";
+		return sql;
+	}
+	public String create(String id){
+		//CREATE TABLE username
+		String sql = "CREATE TABLE "+id+"("
+					+"idate VARCHAR2(10),"
+					+"img1 VARCHAR2(6),"
+					+"img2 VARCHAR2(6),"
+					+"img3 VARCHAR2(6),"
+					+"img4 VARCHAR2(6),"
+					+"img5 VARCHAR2(6),"
+					+"img6 VARCHAR2(6),"
+					+"imglink1 VARCHAR2(100),"
+					+"imglink2 VARCHAR2(100),"
+					+"imglink3 VARCHAR2(100),"
+					+"imglink4 VARCHAR2(100),"
+					+"imglink5 VARCHAR2(100),"
+					+"imglink6 VARCHAR2(100),"
+					+"text VARCHAR2(6),"
+					+"PRIMARY KEY(idate));";
+		return sql;
+	}
+	public String IDchecking(String id){
+		String sql = "SELECT distinct TABLE_NAME from all_col_comments"
+						+"WHERE TABLE_NAME like '"+id+"';";
+		return sql;
+	}
+}

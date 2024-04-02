@@ -1,0 +1,254 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import java.awt.Choice;
+
+import javax.swing.JCheckBox;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JButton;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Window.Type;
+
+import javax.swing.JPanel;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JEditorPane;
+import javax.swing.text.Document;
+
+public class Macro {
+
+	public JFrame frameMacro;
+	
+	private JToggleButton tglbtnWeekMacro, tglbtnMonthMacro, tglbtnYearMacro;
+	private JLabel lblStartDate, lblEndDate;
+	private JCheckBox cbRepeateNum, cbDirectDate;
+	private Choice choiceSDYear, choiceSDMonth, choiceSDDay, choiceEDYear, choiceEDMonth, choiceEDDay;
+	private JTextField repeatnum;
+
+	private JEditorPane textArea;
+	private JTextField tfLinkingText, tfLink;
+	private JButton btnAddText, btnAddImage, btnAddTextMacro, btnAddLinkedText;
+	private JPanel pnlMacroSetting;
+	private JPanel pnlMacroText;
+	
+	public Macro() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frameMacro = new JFrame();
+		frameMacro.setAlwaysOnTop(true);
+		frameMacro.setType(Type.UTILITY);
+		frameMacro.setTitle("Macro");
+		frameMacro.setBounds(450, 200, 340, 290);
+		frameMacro.getContentPane().setLayout(null);
+		
+		pnlMacroSetting = new JPanel();
+		pnlMacroSetting.setBounds(0, 0, 332, 264);
+		frameMacro.getContentPane().add(pnlMacroSetting);
+		pnlMacroSetting.setLayout(null);
+		
+			tglbtnWeekMacro = new JToggleButton("주간");
+			tglbtnWeekMacro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					tglbtnMonthMacro.setSelected(false);
+					tglbtnYearMacro.setSelected(false);
+				}
+			});
+			tglbtnWeekMacro.setBounds(35, 12, 80, 23);
+			pnlMacroSetting.add(tglbtnWeekMacro);
+			
+			tglbtnMonthMacro = new JToggleButton("월간");
+			tglbtnMonthMacro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					tglbtnWeekMacro.setSelected(false);
+					tglbtnYearMacro.setSelected(false);
+				}
+			});
+			tglbtnMonthMacro.setBounds(121, 12, 80, 23);
+			pnlMacroSetting.add(tglbtnMonthMacro);
+			
+			tglbtnYearMacro = new JToggleButton("년간");
+			tglbtnYearMacro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					tglbtnWeekMacro.setSelected(false);
+					tglbtnMonthMacro.setSelected(false);
+				}
+			});
+			tglbtnYearMacro.setBounds(207, 12, 80, 23);
+			pnlMacroSetting.add(tglbtnYearMacro);
+			
+			lblStartDate = new JLabel("Start Date");
+			lblStartDate.setBounds(12, 60, 80, 15);
+			pnlMacroSetting.add(lblStartDate);
+			
+			choiceSDYear = new Choice();
+			for(int year=1990; year<=2089; year++)
+				choiceSDYear.add(year+"");
+			choiceSDYear.setBounds(12, 81, 55, 21);
+			pnlMacroSetting.add(choiceSDYear);
+			
+			choiceSDMonth = new Choice();
+			for(int month=1; month<=12; month++)
+				choiceSDMonth.add(month+"");
+			choiceSDMonth.setBounds(73, 81, 40, 21);
+			pnlMacroSetting.add(choiceSDMonth);
+			
+			choiceSDDay = new Choice();
+			for(int day=1; day<=31; day++)
+				choiceSDDay.add(day+"");
+			choiceSDDay.setBounds(119, 81, 40, 21);
+			pnlMacroSetting.add(choiceSDDay);
+			
+			lblEndDate = new JLabel("Limit");
+			lblEndDate.setBounds(12, 111, 80, 15);
+			pnlMacroSetting.add(lblEndDate);
+			
+			cbRepeateNum = new JCheckBox("적용 횟수 입력");
+			cbRepeateNum.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					cbDirectDate.setSelected(false);
+					choiceEDYear.setEnabled(false);
+					choiceEDMonth.setEnabled(false);
+					choiceEDDay.setEnabled(false);
+					
+					repeatnum.setEnabled(true);
+				}
+			});
+			cbRepeateNum.setBounds(12, 132, 115, 23);
+			pnlMacroSetting.add(cbRepeateNum);
+			
+			repeatnum = new JTextField();
+			repeatnum.setBounds(32, 161, 40, 21);
+			pnlMacroSetting.add(repeatnum);
+			repeatnum.setColumns(10);
+			
+			cbDirectDate = new JCheckBox("End Date 입력");
+			cbDirectDate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					cbRepeateNum.setSelected(false);
+					repeatnum.setEnabled(false);
+					
+					choiceEDYear.setEnabled(true);
+					choiceEDMonth.setEnabled(true);
+					choiceEDDay.setEnabled(true);
+				}
+			});
+			cbDirectDate.setBounds(146, 132, 115, 23);
+			pnlMacroSetting.add(cbDirectDate);
+			
+			choiceEDYear = new Choice();
+			for(int year=1990; year<=2089; year++)
+				choiceEDYear.add(year+"");
+			choiceEDYear.setBounds(168, 161, 55, 21);
+			pnlMacroSetting.add(choiceEDYear);
+			
+			choiceEDMonth = new Choice();
+			for(int month=1; month<=12; month++)
+				choiceEDMonth.add(month+"");
+			choiceEDMonth.setBounds(229, 161, 40, 21);
+			pnlMacroSetting.add(choiceEDMonth);
+			
+			choiceEDDay = new Choice();
+			for(int day=1; day<=31; day++)
+				choiceEDDay.add(day+"");
+			choiceEDDay.setBounds(275, 161, 40, 21);
+			pnlMacroSetting.add(choiceEDDay);
+			
+			btnAddText = new JButton("텍스트 추가하기");
+			btnAddText.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					pnlMacroSetting.setVisible(false);
+					pnlMacroText.setVisible(true);
+				}
+			});
+			btnAddText.setBounds(12, 210, 147, 36);
+			pnlMacroSetting.add(btnAddText);
+			
+			btnAddImage = new JButton("이미지 추가하기");
+			btnAddImage.setBounds(168, 210, 147, 36);
+			pnlMacroSetting.add(btnAddImage);
+			
+			repeatnum.setEnabled(false);
+			choiceEDYear.setEnabled(false);
+			choiceEDMonth.setEnabled(false);
+			choiceEDDay.setEnabled(false);
+		
+		
+		
+		
+		
+		
+		pnlMacroText = new JPanel();
+		pnlMacroText.setBounds(0, 0, 332, 264);
+		frameMacro.getContentPane().add(pnlMacroText);
+		pnlMacroText.setLayout(null);
+		pnlMacroText.setVisible(false);
+		
+			textArea = new JEditorPane();
+			textArea.setBounds(12, 10, 308, 182);
+			pnlMacroText.add(textArea);
+			textArea.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+			
+			tfLinkingText = new JTextField("  text입력");
+			tfLinkingText.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					tfLinkingText.setText("");
+					tfLinkingText.setEditable(true);
+				}
+			});
+			tfLinkingText.setEditable(false);
+			tfLinkingText.setBounds(12, 202, 65, 21);
+			pnlMacroText.add(tfLinkingText);
+			tfLinkingText.setColumns(10);
+			
+			tfLink = new JTextField("  link입력");
+			tfLink.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					tfLink.setText("");
+					tfLink.setEditable(true);
+				}
+			});
+			tfLink.setEditable(false);
+			tfLink.setBounds(84, 202, 65, 21);
+			pnlMacroText.add(tfLink);
+			tfLink.setColumns(10);
+			
+			btnAddLinkedText = new JButton("Add Link");
+			btnAddLinkedText.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					String href=textArea.getText()+" <a href='"+tfLinkingText.getText()+"'>"+tfLink.getText()+"</a> ";
+					String st=href;
+					textArea.setText(st);
+					
+					System.out.print(textArea.getText());
+				}
+			});
+			btnAddLinkedText.setBounds(12, 233, 137, 21);
+			pnlMacroText.add(btnAddLinkedText);
+			
+			btnAddTextMacro = new JButton("OK");
+			btnAddTextMacro.setBounds(211, 202, 109, 52);
+			pnlMacroText.add(btnAddTextMacro);
+	}
+	public void append(String s){
+		try{
+			Document doc=textArea.getDocument();
+			doc.insertString(doc.getLength(), s, null);
+		} catch(BadLocationException exc){
+			exc.printStackTrace();
+		}
+	}
+}

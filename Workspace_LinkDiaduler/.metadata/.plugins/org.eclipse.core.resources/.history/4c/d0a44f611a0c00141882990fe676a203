@@ -1,0 +1,60 @@
+package com.linkdiaduler;
+
+import javax.swing.JFrame;
+
+import java.awt.Color;
+import java.awt.Window.Type;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+public class Settings {
+	
+	public static String savedID, savedPW;
+	public static int[] backgroundColor=new int[3];
+	public static int[] buttonColor=new int[3];
+	public static Color background = new Color(255, 255, 153);
+	public static Color button = new Color(255, 255, 204);
+	
+	public JFrame frameSettings;
+	private JComboBox cbImageModeNum;
+	private JLabel lblImageMode1, lblImageMode2;
+	private JButton btnApply;
+	
+	public Settings() {
+		initialize();
+	}
+
+	
+	private void initialize() {
+		frameSettings = new JFrame();
+		frameSettings.setResizable(false);
+		frameSettings.setType(Type.UTILITY);
+		frameSettings.setBounds(100, 100, 300, 400);
+		frameSettings.getContentPane().setLayout(null);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(0, 0, 294, 376);
+		frameSettings.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		lblImageMode1 = new JLabel("이미지 모드시");
+		lblImageMode1.setBounds(12, 43, 90, 15);
+		panel.add(lblImageMode1);
+		
+		cbImageModeNum = new JComboBox();
+		cbImageModeNum.setBounds(102, 39, 43, 21);
+		panel.add(cbImageModeNum);
+		
+		lblImageMode2 = new JLabel("장으로");
+		lblImageMode2.setBounds(149, 43, 57, 15);
+		panel.add(lblImageMode2);
+		
+		btnApply = new JButton("\uC801\uC6A9");
+		btnApply.setBounds(218, 334, 64, 32);
+		panel.add(btnApply);
+	}
+}

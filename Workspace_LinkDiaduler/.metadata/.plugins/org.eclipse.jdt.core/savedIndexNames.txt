@@ -1,0 +1,8 @@
+INDEX VERSION 1.134+E:\WorkBench\Java\Workspace_LinkDiaduler\.metadata\.plugins\org.eclipse.jdt.core
+1657330681.index
+1083422959.index
+2713215233.index
+1675786101.index
+3894874832.index
+4266181530.index
+1865797976.index

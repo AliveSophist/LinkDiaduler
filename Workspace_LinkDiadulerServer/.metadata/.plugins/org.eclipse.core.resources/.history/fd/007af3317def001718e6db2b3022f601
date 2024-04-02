@@ -1,0 +1,233 @@
+package com.linkdiaduler;
+
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+/**
+ * 개별 클라이언트와 메세지를 주고 받는 스레드
+ * 
+ * 1. extends Thread
+ * 2. run()
+ *
+ */
+public class ServerThread extends Thread{
+	//멤버변수로 선언
+	private Socket socket;	//클라이언트의 메세지를 주고 받는 비즈니스(Socket)
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
+	private String userIP;
+	private CarrierFromServer CFS;
+
+	ServerThread(Socket s){//소켓가져옴
+		this.socket = s;
+		this.userIP = s.getInetAddress().getHostAddress();
+	}
+	
+	//오버라이딩일 경우 throw 불가. 
+	public void run(){
+		try{
+			service();
+		}catch(IOException e){
+			System.out.println("  **"+userIP+"가 접속종료.");
+		}finally{
+			try {
+				closeAll();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void service() throws IOException{
+		ois=new ObjectInputStream(socket.getInputStream());
+		CarrierFromClient CFC = null;//임시초기화
+		try {
+			CFC = (CarrierFromClient)ois.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO 자동 생성된 catch 블록
+			e.printStackTrace();
+		}//객체받고 CFC로 캐스팅!
+		System.out.println(userIP+"="+CFC.happening);
+		String memberip=socket.getInetAddress().getHostAddress();
+		
+		switch(CFC.happening){
+		case "REGISTER"://제공되는 정보 happening, memberID, memberPW, nickname, acceptSSC, email
+			if(!(SQLWords.returnIPOverlapnum(memberip)<4)){//ip 3중복 초과 체크
+				CFS=new CarrierFromServer("ERROR_REGISTERED_MORE_THAN_THREE");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			if(SQLWords.returnIDOverlap(CFC.memberID)){//id 중복 체크
+				CFS=new CarrierFromServer("ERROR_ID_OVERLAP");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			if(SQLWords.returnNicknameOverlap(CFC.nickname)){//nickname 중복 체크
+				CFS=new CarrierFromServer("ERROR_Nickname_OVERLAP");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			if(!isValidEmail(CFC.email)){//email 유효성 확인
+				CFS=new CarrierFromServer("ERROR_NOT_VALID_EMAIL");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			else{
+			//success
+				String serialcode=SQLWords.returnSerialCode();
+				File makeDirectory = new File(Main.route+serialcode);
+				makeDirectory.mkdir();
+				SQLWords.createUserTable(serialcode);
+				SQLWords.insertUserAccount(CFC.memberID, CFC.memberPW, CFC.nickname, memberip, serialcode, CFC.acceptSSC, CFC.email);
+				CFS=new CarrierFromServer("success", serialcode, CFC.nickname, null, SQLWords.returnIPOverlapnum(memberip));
+				break;
+				}
+		case "LOGIN"://제공되는 정보 happening, memberID, memberPW, nickname, acceptSSC, email
+			if(!SQLWords.checkUserInfo("memberid", CFC.memberID, "memberid", CFC.memberID)){//아이디 존재여부
+				System.out.println(SQLWords.checkUserInfo("memberid", CFC.memberID, "memberid", CFC.memberID));
+				CFS=new CarrierFromServer("ERROR_ID_NOT_EXIST");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			if(!SQLWords.checkUserInfo("memberpw", CFC.memberPW, "memberid", CFC.memberID)){//패스워드 확인
+				System.out.println(SQLWords.checkUserInfo("memberpw", CFC.memberPW, "memberid", CFC.memberID));
+				CFS=new CarrierFromServer("ERROR_PW_NOT_CORRECT");
+				System.out.println(userIP+"="+CFS.happening);
+				break;
+			}
+			//success
+			else{
+				CFS=new CarrierFromServer("success", SQLWords.returnUserInfo("serialcode", "memberpw", CFC.memberPW), SQLWords.returnUserInfo("nickname", "memberpw", CFC.memberPW), SQLWords.returnUserInfo("ssclist", "memberpw", CFC.memberPW), SQLWords.returnIPOverlapnum(memberip));
+				break;
+			}
+		case "DOWNLOAD_WEEK_CONTENTS":
+			//success
+			String[] dayofweekIC=new String[7];
+			int[] dayofweekICnum=new int[7];
+			ImageIcon[][] dayofweekImage=new ImageIcon[7][];
+			StringTokenizer st=new StringTokenizer(SQLWords.returnUserWeekIndex(CFC.serialCode, "images", CFC.accessDate), "||");
+			for(int i=0; i<7; i++)
+				dayofweekIC[i]=st.nextToken();
+			String[][] dayofweekImagename=new String[7][];
+			for(int i=0; i<7; i++){
+				if(dayofweekIC[i].contains(" ")){//공백은 구분자로서 이미지 유무를 판단함
+					st=new StringTokenizer(dayofweekIC[i], " ");
+					dayofweekICnum[i]=st.countTokens()-1;
+					dayofweekImagename[i]=new String[dayofweekICnum[i]];//해당날짜(i)의 이미지컨텐츠 갯수로 배열갯수 초기화.
+					dayofweekImage[i]=new ImageIcon[dayofweekICnum[i]];
+					st.nextToken();//dayofweekIC [토크니저로 나눈결과(해당요일의 날짜 -공백- 이미지+:::+정보 -공백- 이미지:::정보  -공백- 이미지:::정보..)]
+					
+					int j=0;
+					while(j<dayofweekICnum[i]){//이미지 토큰 갯수만큼 반복해줌.
+						String devideIC=st.nextToken();
+
+						dayofweekImagename[i][j]=devideIC.substring(0, devideIC.indexOf(":"));
+						dayofweekImage[i][j]=new ImageIcon(Main.route+CFC.serialCode+"\\"+dayofweekImagename[i][j]+".png");
+						System.out.println(i+","+j+"에 "+Main.route+CFC.serialCode+"\\"+dayofweekImagename[i][j]+".png 로드. 넓이/크기"+dayofweekImage[i][j].getIconWidth()+"/"+dayofweekImage[i][j].getIconHeight());
+						j++;
+					}
+				}
+				else{//내용없을경우 아무것도 안함
+				}
+			}			
+			CFS=new CarrierFromServer("success", SQLWords.returnUserWeekIndex(CFC.serialCode, "texts", CFC.accessDate), SQLWords.returnUserWeekIndex(CFC.serialCode, "images", CFC.accessDate), dayofweekImage, dayofweekICnum);
+			break;
+		case "UPLOAD_INDEX":
+			SQLWords.updateUserTexts(CFC.serialCode, CFC.kindIndex, CFC.repeatnum, CFC.fixIndex);
+			CFS=new CarrierFromServer("success");
+			break;
+		case "UPLOAD_IMAGE_ADD":
+			System.out.println(CFC.fixIndex);
+			SQLWords.updateUserImages(CFC.serialCode, CFC.repeatnum, CFC.fixIndex);
+			
+			Image image = CFC.addImage.getImage();  
+			RenderedImage rendered = null;  
+			if (image instanceof RenderedImage)  
+			{  
+			    rendered = (RenderedImage)image;  
+			}  
+			else  
+			{  
+			    BufferedImage buffered = new BufferedImage(  
+			    	CFC.addImage.getIconWidth(),  
+			    	CFC.addImage.getIconHeight(),  
+			        BufferedImage.TYPE_INT_RGB  
+			    );  
+			    Graphics2D g = buffered.createGraphics();  
+			    g.drawImage(image, 0, 0, null);  
+			    g.dispose();  
+			    rendered = buffered;  
+			}
+			ImageIO.write(rendered, "png", new File(Main.route+CFC.serialCode+"\\"+CFC.imagename+".png"));
+			
+			CFS=new CarrierFromServer("success");
+			break;
+		case "UPLOAD_IMAGE_DEL":
+			System.out.println(CFC.fixIndex);
+			new File(Main.route+CFC.serialCode+"\\"+CFC.imagename+".png").delete();
+			SQLWords.updateUserTexts(CFC.serialCode, CFC.kindIndex, CFC.repeatnum, CFC.fixIndex);
+			CFS=new CarrierFromServer("success");
+			break;
+		case "SUBSCRIBE":
+			if(!SQLWords.checkUserInfo("sscaccept", "1", "nickname", CFC.SSCnickname)){
+				CFS=new CarrierFromServer("THIS_ACCOUNT_NOT_ACCEPT_SUBSCRIPTION");
+				break;
+			}
+			CFS=new CarrierFromServer("success", SQLWords.returnUserInfo("serialcode", "nickname", CFC.SSCnickname));
+			break;
+		case "ADD_SUBSCRIBE":
+			if(!SQLWords.checkUserInfo("sscaccept", "1", "nickname", CFC.SSCnickname)){
+				CFS=new CarrierFromServer("ACCOUNT_NOT_EXIST_OR_NOT_ACCEPT_SUBSCRIPTION");
+				break;
+			}
+			if(CFC.SSClist==null)
+				SQLWords.updateSSCList(CFC.serialCode, CFC.SSCnickname);
+			else
+				SQLWords.updateSSCList(CFC.serialCode, CFC.SSClist+" "+CFC.SSCnickname);
+			CFS=new CarrierFromServer("success");
+			break;
+		case "DEL_SUBSCRIBE":
+			CFC.SSClist=CFC.SSClist.replace(" "+CFC.SSCnickname, "");
+			SQLWords.updateSSCList(CFC.serialCode, CFC.SSClist);
+			CFS=new CarrierFromServer("success");
+			break;
+		case "SECESSION":
+			
+			break;
+		}
+		oos=new ObjectOutputStream(socket.getOutputStream());
+		oos.writeObject(CFS);
+		oos.flush();
+	}
+	public void closeAll()throws IOException{
+		if (oos != null)
+			oos.close();
+		if (ois != null)
+			ois.close();
+		if (socket != null)
+			socket.close();
+	}
+	public static boolean isValidEmail(String email) {
+		boolean err = false;
+		String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";   
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(email);
+		if(m.matches()) {
+			err = true; 
+		}
+		return err;
+	}
+}

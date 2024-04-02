@@ -1,0 +1,72 @@
+package com.linkdiaduler;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+public class Main{
+	
+	public static String route="C:\\LinkDiaduler\\";
+	/**
+	 * 다수의 클라이언트가 접속하여 계속 통신하는 서버 프로그램
+	 * step
+	 * 1. 서버소켓 실행.
+	 * 2. 클라이언트가 새로 접속시까지 블로킹시켜놓음.
+	 * 3. 클라이언트가 새로 접속시 새로운 쓰레드에 할당 후 리퀘스트 실행.
+	 */
+	
+	
+	
+	public static void go() throws IOException{
+		ServerSocket ss = null;
+		Socket s = null;
+
+		try{
+			ss = new ServerSocket(4567);
+			System.out.println("**서버 실행**");
+			//다수의 클라이언트와 통신하기 위해 loop
+			while(true){
+				System.out.println("블로킹 중");
+				s = ss.accept(); //클라이언트 접속시까지 블로킹
+
+				ServerThread st = new ServerThread(s);//클라이언트 접속시 블로킹해제되면서 쓰레드로 소켓인자줌.
+				st.start(); //쓰레드시작잼.
+				System.out.println(s.getInetAddress()+"가 접속");
+			}
+		}finally{
+			if (s != null)
+				s.close();
+			if (ss != null)
+				ss.close();
+			System.out.println("**서버 종료**");
+		}
+	}
+
+	public static void main(String[] args) {
+		/**
+		 * MySQL 인스톨 후 새로 서버 구성시 꼭 필요한 4 Step!!
+		 * 
+		 *	1. 'LinkDiaduler 전용 DB'를 생성한다.
+		 //SQLWords.createDB();
+		 * 
+		 *	2. '계정 저장용 테이블'을 생성한다.
+		 //SQLWords.createAccountTable();
+		 * 
+		 *	3. '계정 데이터 저장용 견본 테이블'을 생성한다.
+		 //SQLWords.createTestTable();
+		 *  
+		 *  4. 아래의 USER,PASS에 DB설치시 권한을 할당한 계정을 넣어준다.
+		 */
+		SQLWords.JDBC_DRIVER = "com.mysql.jdbc.Driver";
+		SQLWords.DB_URL_createDB = "jdbc:mysql://localhost:3306/"+"?autoReconnect=true&useSSL=false";
+		SQLWords.DB_URL = "jdbc:mysql://localhost:3306/linkdiaduler"+"?autoReconnect=true&useSSL=false";
+		SQLWords.USER="root";
+		SQLWords.PASS="student13";
+		
+		try {
+			go();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+}

@@ -1,0 +1,79 @@
+package com.thesophist.window.macro;
+
+import java.awt.MouseInfo;
+import java.awt.Point;
+
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+
+import java.awt.Font;
+import java.awt.Choice;
+import java.awt.Button;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class JPanelAddAction extends JPanel {
+	private static Choice chMouseButton, chMouseEvent, chOneKeyButton, chOneKeyEvent;
+	/**
+	 * Create the panel.
+	 */
+	public JPanelAddAction() {
+		setLayout(null);
+		
+		
+		JLabel lblMouseEvent = new JLabel("\uB9C8\uC6B0\uC2A4 \uC774\uBCA4\uD2B8");
+		lblMouseEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblMouseEvent.setBounds(10, 10, 137, 25);
+		add(lblMouseEvent);
+		
+		Choice chMouseButton = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_BUTTON_SPECIES.length; i++)
+			chMouseButton.addItem(ControlRobot.MOUSE_BUTTON_SPECIES[i]);
+		chMouseButton.setBounds(10, 41, 100, 21);
+		add(chMouseButton);
+		
+		Choice chMouseEvent = new Choice();
+		for(int i=0; i<ControlRobot.MOUSE_EVENTS_SPECIES.length; i++)
+			chMouseEvent.addItem(ControlRobot.MOUSE_EVENTS_SPECIES[i]);
+		chMouseEvent.setBounds(116, 41, 100, 21);
+		add(chMouseEvent);
+		
+		Button btnAddMouseEvent = new Button("\uC0DD\uC131");
+		btnAddMouseEvent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ControlRobot.packMouseEvent(chMouseEvent.getSelectedItem(),Integer.parseInt(chMouseButton.getSelectedItem());
+			}
+		});
+		btnAddMouseEvent.setBounds(314, 41, 76, 50);
+		add(btnAddMouseEvent);
+		
+		
+		
+		JLabel lblKeyEvent = new JLabel("\uD0A4\uBCF4\uB4DC \uC774\uBCA4\uD2B8");
+		lblKeyEvent.setFont(new Font("±¼¸²", Font.PLAIN, 20));
+		lblKeyEvent.setBounds(10, 195, 137, 25);
+		add(lblKeyEvent);
+		
+		Choice chOneKeyButton = new Choice();
+		for(int i=0; i<ControlRobot.KEY_BUTTON_SPECIES.length; i++)
+			chOneKeyButton.addItem(ControlRobot.KEY_BUTTON_SPECIES[i]);
+		chOneKeyButton.setBounds(10, 226, 100, 21);
+		add(chOneKeyButton);
+		
+		Choice chOneKeyEvent = new Choice();
+		for(int i=0; i<ControlRobot.KEY_EVENTS_SPECIES.length; i++)
+			chOneKeyEvent.addItem(ControlRobot.KEY_EVENTS_SPECIES[i]);
+		chOneKeyEvent.setBounds(116, 226, 100, 21);
+		add(chOneKeyEvent);
+		
+		Button btnAddKeyEvent = new Button("\uC0DD\uC131");
+		btnAddKeyEvent.setBounds(314, 226, 76, 50);
+		add(btnAddKeyEvent);
+	}
+	void getCursorPoint(){
+		p = MouseInfo.getPointerInfo().getLocation();
+	}
+	void getKeyCode(){
+		
+	}
+}

@@ -1,0 +1,10 @@
+package com.linkdiaduler;
+
+public class MainForOnline {
+
+	public static void main(String[] args) {
+		System.out.println(DateManager.toString(DateManager.getSat(),5));
+		System.out.println(DateManager.addDate(DateManager.getSat(), 1));
+		System.out.println(DateManager.toString(DateManager.getSat(),5));
+	}
+}

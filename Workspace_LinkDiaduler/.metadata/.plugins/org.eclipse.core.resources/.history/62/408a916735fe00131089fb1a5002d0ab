@@ -1,0 +1,65 @@
+package com.linkdiaduler;
+
+import java.io.Serializable;
+
+import javax.swing.ImageIcon;
+
+@SuppressWarnings("serial")
+public class CarrierFromClient implements Serializable{
+	
+	String happening;
+	//송신해야할 놈들
+	String memberID;
+	String memberPW;
+	boolean acceptSSC;
+	String email;
+	String serialCode;
+	int accessDate;
+	String oldIndex;
+	String fixIndex;
+	String SSC;
+	ImageIcon addImage;
+
+	
+
+	//송신(생성자)
+	public CarrierFromClient(String happening, String memberID, String memberPW,boolean acceptSSC, String email)
+	{//register, login
+		happening=this.happening;
+		memberID=this.memberID;
+		memberPW=this.memberPW;
+		acceptSSC=this.acceptSSC;
+		email=this.email;
+	}
+	public CarrierFromClient(String happening, String serialCode, int accessDate)
+	{//download week indexs
+		happening=this.happening;
+		serialCode=this.serialCode;
+		accessDate=this.accessDate;
+		
+	}
+	public CarrierFromClient(String happening, String serialCode, int accessDate, int accessRow, String oldIndex, String fixIndex)
+	{//upload index(Text or Image)
+		happening=this.happening;
+		serialCode=this.serialCode;
+		accessDate=this.accessDate;
+		accessRow=this.accessDate;
+		oldIndex=this.oldIndex;//텍스트의 경우 내용의 수정이므로 Date+내용(null), 이미지의 경우 추가이므로 Date
+		fixIndex=this.fixIndex;//텍스트의 경우 내용의 수정이므로 Date+수정된내용, 이미지의 경우 추가이므로 Date+이미지
+	}
+	public CarrierFromClient(String happening, ImageIcon addImage)
+	{//upload image
+		happening=this.happening;
+		addImage=this.addImage;
+	}
+	public CarrierFromClient(String happening)
+	{//show SSC
+		happening=this.happening;
+	}
+	public CarrierFromClient(String happening, String SSC)
+	{//add del subscribe
+		happening=this.happening;
+		SSC=this.SSC;
+	}
+	
+}

@@ -1,0 +1,86 @@
+package com.linkdiaduler;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.Choice;
+
+public class Macro {
+
+	private JFrame frame;
+	
+	private JLabel lblStartDate, lblEndDate;
+	private Choice choiceSDYear, choiceSDMonth, choiceSDDay, choiceEDYear, choiceEDMonth, choiceEDDay;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Macro window = new Macro();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Macro() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 400, 250);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		lblStartDate = new JLabel("Start Date");
+		lblStartDate.setBounds(12, 10, 60, 15);
+		frame.getContentPane().add(lblStartDate);
+		
+		choiceSDYear = new Choice();
+		for(int year=1990; year<=2089; year++)
+			choiceSDYear.add(year+"");
+		choiceSDYear.setBounds(12, 31, 55, 21);
+		frame.getContentPane().add(choiceSDYear);
+		
+		choiceSDMonth = new Choice();
+		for(int month=1; month<=12; month++)
+			choiceSDMonth.add(month+"");
+		choiceSDMonth.setBounds(73, 31, 40, 21);
+		frame.getContentPane().add(choiceSDMonth);
+		
+		choiceSDDay = new Choice();
+		for(int day=1; day<=31; day++)
+			choiceSDDay.add(day+"");
+		choiceSDDay.setBounds(119, 31, 40, 21);
+		frame.getContentPane().add(choiceSDDay);
+		
+		lblEndDate = new JLabel("End Date");
+		lblEndDate.setBounds(12, 84, 60, 15);
+		frame.getContentPane().add(lblEndDate);
+		
+		choiceEDYear = new Choice();
+		choiceEDYear.setBounds(235, 116, 55, 21);
+		frame.getContentPane().add(choiceEDYear);
+		
+		choiceEDMonth = new Choice();
+		choiceEDMonth.setBounds(296, 116, 40, 21);
+		frame.getContentPane().add(choiceEDMonth);
+		
+		choiceEDDay = new Choice();
+		choiceEDDay.setBounds(342, 116, 40, 21);
+		frame.getContentPane().add(choiceEDDay);
+	}
+}

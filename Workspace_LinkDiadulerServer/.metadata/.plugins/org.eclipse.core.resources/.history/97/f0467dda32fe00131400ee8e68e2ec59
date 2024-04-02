@@ -1,0 +1,65 @@
+package com.lindaserver;
+
+import java.io.Serializable;
+
+import javax.swing.ImageIcon;
+
+@SuppressWarnings("serial")
+public class CarrierFromClient implements Serializable{
+	
+	protected String happening;
+	//송신해야할 놈들
+	protected String id;
+	protected String pw;
+	protected boolean acceptSSC;
+	protected String email;
+	protected String serialCode;
+	protected int accessDate;
+	protected String oldIndex;
+	protected String fixIndex;
+	protected String SSC;
+	protected ImageIcon addImage;
+
+	
+
+	//송신(생성자)서버 -> 클라이언트
+	public CarrierFromClient(String happening, String id, String pw,boolean acceptSSC, String email)
+	{//register, login
+		happening=this.happening;
+		id=this.id;
+		pw=this.pw;
+		acceptSSC=this.acceptSSC;
+		email=this.email;
+	}
+	public CarrierFromClient(String happening, String serialCode, int accessDate)
+	{//download week indexs
+		happening=this.happening;
+		serialCode=this.serialCode;
+		accessDate=this.accessDate;
+		
+	}
+	public CarrierFromClient(String happening, String serialCode, int accessDate, char kind, String oldIndex, String fixIndex)
+	{//upload index(Text or Image)
+		happening=this.happening;
+		serialCode=this.serialCode;
+		accessDate=this.accessDate;
+		
+		oldIndex=this.oldIndex;//텍스트의 경우 내용의 수정이므로 Date+내용(null), 이미지의 경우 추가이므로 Date
+		fixIndex=this.fixIndex;//텍스트의 경우 내용의 수정이므로 Date+수정된내용, 이미지의 경우 추가이므로 Date+이미지
+	}
+	public CarrierFromClient(String happening, ImageIcon addImage)
+	{//upload image
+		happening=this.happening;
+		addImage=this.addImage;
+	}
+	public CarrierFromClient(String happening)
+	{//show SSC
+		happening=this.happening;
+	}
+	public CarrierFromClient(String happening, String SSC)
+	{//add del subscribe
+		happening=this.happening;
+		SSC=this.SSC;
+	}
+	
+}

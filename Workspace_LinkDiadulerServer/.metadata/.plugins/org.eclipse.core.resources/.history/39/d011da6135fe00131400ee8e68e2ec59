@@ -1,0 +1,179 @@
+package com.lindaserver;
+
+import java.sql.*;
+import java.util.Calendar;
+
+public class SQLWords {
+	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+	static final String DB_URL = "jdbc:mysql://localhost/linkdiaduler";
+	static String USER = "SOPHIST";
+	static String PASS = "link5142diaduler";
+
+	static Connection conn = null;
+	static Statement stmt = null;
+	ResultSet rs = null;
+	
+	public static void createDB(){//데이터 베이스 제작
+		try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      stmt = conn.createStatement();
+		      
+		      String sql = "CREATE DATABASE STUDENTS";
+		      stmt.executeUpdate(sql);
+
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            stmt.close();
+		      }catch(SQLException se2){
+		      }// nothing we can do
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+	}//end createdb
+	public static void createAccountTable() {//데이터베이스 제작후 즉시 이행
+		   Connection conn = null;
+		   Statement stmt = null;
+		   try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      stmt = conn.createStatement();
+		      
+		      String sql = "create table accounts( " +
+		                   "memberid varchar(10) not null primary key," + 
+		                   "memberpw varchar(10) not null," + 
+		                   "nickname varchar(20) not null," + 
+		                   "registerip varchar(20) not null," + 
+		                   "serialcode varchar(16) not null," + 
+		                   "sscaccept BOOL not null," +
+		                   "ssclist varchar(255)," +
+		                   "email varchar(80) not null)"; 
+		      stmt.executeUpdate(sql);
+		  
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		      }// do nothing
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+	}//end createtable
+	public static void insertUserTable(String serialCode) {//데이터베이스 생성후 즉시 이행 유저테이블 콜드작성용 더미테이블
+		   Connection conn = null;
+		   Statement stmt = null;
+		   try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      stmt = conn.createStatement();
+		      
+		      String sqlInsert = null;
+		      DateManager.warpDate(1989, 12, 31);
+		      while(DateManager.getOriginal().get(Calendar.YEAR)!=2050){
+		    	  sqlInsert = "INSERT INTO "+serialCode+" (dates, texts, images, imagenum)" +
+		    			  	  "VALUES ("+DateManager.toString(DateManager.getOriginal(), 5)+", null, null, 0)";
+		    	  stmt.executeUpdate(sqlInsert);
+		    	  DateManager.addDate(DateManager.getOriginal(), 1);
+		      
+		      }
+		   }catch(SQLException se){
+			   //Handle errors for JDBC
+			   se.printStackTrace();
+		   }catch(Exception e){
+			   //Handle errors for Class.forName
+			   e.printStackTrace();
+		   }finally{
+			   //finally block used to close resources
+			   try{
+				   if(stmt!=null)
+					   conn.close();
+			   }catch(SQLException se){
+			   }// do nothing
+			   try{
+				   if(conn!=null)
+					   conn.close();
+			   }catch(SQLException se){
+				   se.printStackTrace();
+			   }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+	}//end createtable
+	
+	
+	
+	
+	
+	public static void createUserTable(String serialCode) {//유저 생성시 즉시 이행
+		   Connection conn = null;
+		   Statement stmt = null;
+		   try{
+
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      stmt = conn.createStatement();
+		      
+		      String sqlCreate = "create table "+serialCode+"(select * from test where imagenum < 1)";//모든요소를 갖다붙여
+		      stmt.executeUpdate(sqlCreate);
+		      
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		   }finally{
+		      //finally block used to close resources
+		      try{
+		         if(stmt!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		      }// do nothing
+		      try{
+		         if(conn!=null)
+		            conn.close();
+		      }catch(SQLException se){
+		         se.printStackTrace();
+		      }//end finally try
+		   }//end try
+		   System.out.println("Goodbye!");
+		}//end createtable
+
+
+	
+	
+
+
+	
+
+
+	public static void main(String[] args) {
+		
+		createAccountTable();
+	}
+}//end JDBCExample

@@ -1,0 +1,58 @@
+package com.linkdiaduler;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Window.Type;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class RGBCreater implements ChangeListener{
+
+
+	//rgb°ª ¼³Á¤
+
+
+	private JFrame frameRGBCreater;
+
+	public RGBCreater(int r, int g, int b){
+		initialize();
+		this.r=r;
+		this.g=g;
+		this.b=b;
+	}
+
+	public void initialize()
+	{
+		frameRGBCreater = new JFrame();
+		frameRGBCreater.setResizable(false);
+		frameRGBCreater.setType(Type.UTILITY);
+		frameRGBCreater.setBounds(300,100,333,250);
+		pnlRGBSettings.setBackground(new Color(255, 255, 200));
+		frameRGBCreater.setVisible(true);
+
+		
+	 }
+
+
+	
+
+	
+	 public static void main(String[] args)
+	 {
+		 RGBCreater rc= new RGBCreater(255, 255, 240);
+	 }
+}
